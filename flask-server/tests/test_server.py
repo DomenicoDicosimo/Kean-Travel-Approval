@@ -1,5 +1,6 @@
 import pytest
 
+
 # Reference: https://www.guru99.com/pytest-tutorial.html
 def test_file1_method1():
     x = 5
