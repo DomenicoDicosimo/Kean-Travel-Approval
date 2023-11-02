@@ -1,11 +1,26 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
-  return(
-  <div>
-    <h1>Welcome</h1>
+  const [message, setMessage] = useState('');
 
-  </div>
-  )
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:5000/test')
+      .then((response) => {
+        setMessage(response.data.message);
+      })
+      .catch((error) => {
+        console.error('Error fetching data: ', error);
+      });
+  }, []);
+
+  return (
+    <div>
+      <h3>Hello from React</h3>
+      <h3>{message}</h3>
+    </div>
+  );
 }
+
 export default App;
