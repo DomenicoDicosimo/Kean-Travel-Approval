@@ -1,0 +1,30 @@
+name: Run Tests
+
+on:
+  push: 
+    branches: [main]
+    paths: 'requirements.txt'
+  pull_request:
+    branches: [main]
+    paths: 'requirements.txt'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+          
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          
+      - name: Install dependencies
+        run: |
+          pip install -requirments.txt
+          
+      - name: Run Tests
+        run: |
+          python -m unittest discover tests
