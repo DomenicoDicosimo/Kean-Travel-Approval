@@ -1,9 +1,16 @@
+"""
+This module initializes a Flask app and sets up a SQLAlchemy database connection.
+"""
+import logging
 import os
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
@@ -47,8 +54,17 @@ def get_all_staff():
 # testing for staff by name
 @app.route("/staff/<name>")
 def get_staff(name):
-    staff = Staff.query.filter_by(name=name).all()
-    return jsonify([s.to_dict() for s in staff])
+    if not name.isalpha():  # Simple check to ensure 'name' contains only letters
+        return jsonify({"error": "Invalid name parameter"}), 400
+
+    try:
+        staff = Staff.query.filter_by(name=name).all()
+        if not staff:
+            return jsonify({"error": "Staff member not found"}), 404
+        return jsonify([s.to_dict() for s in staff])
+    except Exception as e:
+        logging.error("An error occurred: %s", e)
+        return jsonify({"error": "An error occurred while fetching staff members"}), 500
 
 
 # Test Route
