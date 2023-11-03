@@ -25,6 +25,10 @@ db = SQLAlchemy(app)
 
 
 class Staff(db.Model):
+    """
+    Represents a staff member in the database.
+    """
+
     __tablename__ = "Staff"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
@@ -34,6 +38,9 @@ class Staff(db.Model):
     ext = db.Column(db.Integer)
 
     def to_dict(self):
+        """
+        Returns a dictionary representation of the Staff object.
+        """
         return {
             "id": self.id,
             "name": self.name,
@@ -43,10 +50,17 @@ class Staff(db.Model):
             "ext": self.ext,
         }
 
+    def __repr__(self):
+        return f"<Staff {self.name}>"
+
 
 # testing for all staff
 @app.route("/staff")
 def get_all_staff():
+    """
+    Returns a JSON representation of all staff members in the database.
+    """
+
     staff = Staff.query.all()
     return jsonify([s.to_dict() for s in staff])
 
@@ -54,6 +68,10 @@ def get_all_staff():
 # testing for staff by name
 @app.route("/staff/<name>")
 def get_staff(name):
+    """
+    Returns a JSON representation of a staff member with the given name.
+    """
+
     if not name.isalpha():  # Simple check to ensure 'name' contains only letters
         return jsonify({"error": "Invalid name parameter"}), 400
 
@@ -70,6 +88,10 @@ def get_staff(name):
 # Test Route
 @app.route("/")
 def test():
+    """
+    Returns a JSON message "Hello from Flask".
+    """
+
     return jsonify(message="Hello from Flask")
 
 
