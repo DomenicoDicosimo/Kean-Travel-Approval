@@ -1,3 +1,7 @@
+"""
+This module contains the routes for the Flask server.
+"""
+
 from flask import Blueprint, jsonify, request
 
 from . import db
@@ -33,6 +37,10 @@ def add_user():
         zip=data["zip"],
         role=data["role"],
     )
+
+    if User.query.filter_by(email=data["email"]).first():
+        return jsonify({"message": "User already exists!"}), 200
+
     db.session.add(user)
     db.session.commit()
     return jsonify({"message": "User added successfully!"}), 200
@@ -41,8 +49,4 @@ def add_user():
 # Test Route
 @main.route("/")
 def test():
-    """
-    Returns a JSON message "Hello from Flask".
-    """
-
     return jsonify(message="Hello from Flask")

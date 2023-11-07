@@ -37,10 +37,8 @@ export default function WelcomePage() {
   };
 
   React.useEffect(() => {
-    if (user) {
-      addUserToDatabase();
-    }
-  }, [user]);
+    addUserToDatabase();
+  }, []);
 
   // Account for sign out while on page
   if (!clerkIsLoaded || !userId) {
