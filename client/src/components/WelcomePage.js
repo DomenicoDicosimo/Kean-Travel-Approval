@@ -11,8 +11,15 @@ export default function WelcomePage() {
         return null;
     }
 
+    /* user.update({
+        unsafeMetadata: {
+            keanId: 1111111,
+            customField1: 'test'
+        }
+    }) */
     return (<>
         <div>
+            <h3></h3>
             <h1>Welcome {user.firstName} {user.lastName}!</h1>
         </div>
     </>)
