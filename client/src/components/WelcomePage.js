@@ -1,5 +1,6 @@
 import React from "react";
 import {useAuth, useUser} from "@clerk/clerk-react";
+import NavBar from "./NavBar";
 
 export default function WelcomePage() {
     // Access authentication state
@@ -17,9 +18,9 @@ export default function WelcomePage() {
             customField1: 'test'
         }
     }) */
-    return (<>
-        <br/><br/><br/>
-
+    return (
+    <>
+        <NavBar/>
         <div>
             <h3></h3>
             <h1>Welcome {user.firstName} {user.lastName}!</h1>
