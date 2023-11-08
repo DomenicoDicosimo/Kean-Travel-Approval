@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 import {
-    ClerkProvider,
-    SignedIn,
-    SignedOut,
-    RedirectToSignIn, SignIn, SignUp
+    ClerkProvider, SignUp,
 } from "@clerk/clerk-react";
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {ChakraProvider} from "@chakra-ui/react";
+import NavBar from "./components/NavBar";
 import WelcomePage from "./components/WelcomePage";
 
 if(!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
@@ -17,13 +15,24 @@ const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 function App() {
   return (
       <>
-        <BrowserRouter>
-            <ClerkProviderWithRoutes />
-        </BrowserRouter>
+        <ClerkProvider publishableKey={clerkPubKey}>
+            <ChakraProvider>
+              <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<WelcomePage />} />
+                        <Route
+                        path="/sign-up/*"
+                        element={<SignUp routing="path" path="/sign-up" />}
+                        />
+                    </Routes>
+                  <NavBar/>
+              </BrowserRouter>
+            </ChakraProvider>
+        </ClerkProvider>
       </>
   );
 }
-
+/*
 function ClerkProviderWithRoutes() {
     const navigate = useNavigate();
     return (
@@ -34,12 +43,7 @@ function ClerkProviderWithRoutes() {
       <Routes>
         <Route path="/" element={
         <>
-            <SignedIn>
-              <WelcomePage />
-            </SignedIn>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
+          <WelcomePage />
         </>
         }/>
         <Route
@@ -51,7 +55,11 @@ function ClerkProviderWithRoutes() {
           element={<SignUp routing="path" path="/sign-up" />}
         />
         <Route
-          path="/protected"
+          path="/sign-out"
+          element={<SignOutButton routing="path" path={"/sign-out"}/>}
+        />
+        <Route
+          path="/database"
           element={
           <>
             <SignedIn>
@@ -95,16 +103,15 @@ function DatabaseTestPage() {
       }, []);
 
   return (
-      <ClerkProvider publishableKey={clerkPubKey}>
-          <div>
-              <h3>Hello from React</h3>
-              <h3>{message}</h3>
+      <div>
+          <h3>Hello from React</h3>
+          <h3>{message}</h3>
 
-              {names.map((name, index) => (
-                <p key={index}>{name}</p>
-              ))}
-          </div>
-      </ClerkProvider>
+          {names.map((name, index) => (
+            <p key={index}>{name}</p>
+          ))}
+      </div>
   );
 }
+*/
 export default App;

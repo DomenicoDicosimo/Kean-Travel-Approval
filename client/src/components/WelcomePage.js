@@ -18,6 +18,8 @@ export default function WelcomePage() {
         }
     }) */
     return (<>
+        <br/><br/><br/>
+
         <div>
             <h3></h3>
             <h1>Welcome {user.firstName} {user.lastName}!</h1>
