@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
+import NavBar from "./NavBar";
 
 export default function WelcomePage() {
   // Access authentication state
@@ -52,6 +53,7 @@ export default function WelcomePage() {
   //   });
   return (
     <>
+      <NavBar/>
       <div>
         <h3></h3>
         <h1>

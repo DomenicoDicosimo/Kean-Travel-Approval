@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-
+import logo from '../images/logo.png'
 import {
   Box,
   Flex,
@@ -29,7 +29,7 @@ export default function NavBar() {
   const { isOpen, onToggle } = useDisclosure()
 
   return (
-    <Box position="fixed" top="0" w="100%">
+    <Box position="relative" top="0" w="100%">
       <Flex
         bg={useColorModeValue('white', 'gray.800')}
         color={useColorModeValue('gray.600', 'white')}
@@ -56,7 +56,7 @@ export default function NavBar() {
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
             fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}>
-            Logo
+            <a href="/"><img src={logo} alt="Kean University Logo" style={{height: 30}}></img></a>
           </Text>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
@@ -70,7 +70,7 @@ export default function NavBar() {
           direction={'row'}
           spacing={6}>
           <SignedIn>
-            <UserButton />
+            <UserButton afterSignOutUrl="/"/>
           </SignedIn>
           <SignedOut>
             <Button
@@ -85,6 +85,19 @@ export default function NavBar() {
                 bg: 'blue.300',
               }}>
               Sign Up
+            </Button>
+            <Button
+              as={'a'}
+              display={{ base: 'none', md: 'inline-flex' }}
+              fontSize={'sm'}
+              fontWeight={600}
+              color={'white'}
+              bg={'blue.400'}
+              href={'/login'}
+              _hover={{
+                bg: 'blue.300',
+              }}>
+              Log In
             </Button>
           </SignedOut>
 
@@ -253,7 +266,19 @@ const NAV_ITEMS: Array<NavItem> = [
     href: '/',
   },
   {
+    label: 'Forms',
+    href: '/forms',
+  },
+  {
+    label: 'Group Travel',
+    href: '/group-travel',
+  },
+  {
+    label: 'Dashboard',
+    href: '/dashboard'
+  },
+  {
     label: 'Database Test',
-    href: '/database'
+    href: '/test-database'
   }
 ]
