@@ -1,6 +1,6 @@
 import React from 'react';
 import { useUser } from '@clerk/clerk-react';
-import NavBar from "./NavBar";
+import NavBar from './NavBar';
 
 export default function WelcomePage() {
   // Access authentication state
@@ -38,7 +38,7 @@ export default function WelcomePage() {
 
   React.useEffect(() => {
     addUserToDatabase();
-  }, []);
+  }, [user]);
 
   //   user.update({
   //     unsafeMetadata: {
@@ -47,7 +47,7 @@ export default function WelcomePage() {
   //   });
   return (
     <>
-      <NavBar/>
+      <NavBar />
       <div>
         <h1>Welcome Page</h1>
       </div>
