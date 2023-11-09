@@ -7,6 +7,7 @@ import {ChakraProvider} from "@chakra-ui/react";
 import GroupTravel from "./components/GroupTravel"
 import WelcomePage from "./components/WelcomePage";
 import TestDatabase from "./components/TestDatabase";
+import Forms from "./components/StudentTravelRegistrationFormDay";
 
 if(!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
     throw new Error("Missing Clerk Publishable Key")
@@ -44,6 +45,10 @@ function App() {
                         <Route
                         path="/group-travel/*"
                         element={<GroupTravel/>}>
+                        </Route>
+                        <Route
+                        path="/forms/*"
+                        element={<Forms/>}>
                         </Route>
                     </Routes>
               </BrowserRouter>
