@@ -77,9 +77,13 @@ def submit_student_travel_registration_form_day():
         zip=data.get("zip"),
     )
 
+    if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
+        return jsonify({"message": "User already submitted form. Wait for approval."}), 200
+
     db.session.add(student_registration_day)
     db.session.commit()
 
+    return jsonify({"message": "Form submitted successfully"}), 200
 
 # Test Route
 @main.route("/")
