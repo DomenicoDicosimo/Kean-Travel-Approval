@@ -1,18 +1,38 @@
 import React from 'react';
-import {
-    ClerkProvider, SignIn, SignUp,
-} from "@clerk/clerk-react";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import PropTypes from 'prop-types';
+import {ClerkProvider, SignIn, SignUp, useUser} from "@clerk/clerk-react";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 import {ChakraProvider} from "@chakra-ui/react";
 import GroupTravel from "./components/GroupTravel"
 import WelcomePage from "./components/WelcomePage";
-import TestDatabase from "./components/TestDatabase";
 import Forms from "./components/StudentTravelRegistrationFormDay";
+import TestDatabase from "./components/TestDatabase";
+
 
 if(!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
     throw new Error("Missing Clerk Publishable Key")
 }
 const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+
+function PrivateRoute({ children }) {
+    const { isSignedIn } = useUser();
+    return isSignedIn ? children : <Navigate to="/login" replace />;
+}
+
+PrivateRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
+
+function AuthRedirect({ to }) {
+    const { isSignedIn } = useUser();
+    return isSignedIn ? <Navigate to={to} replace /> : null;
+}
+
+AuthRedirect.propTypes = {
+    to: PropTypes.string.isRequired,
+};
+
 
 function App() {
   return (
@@ -20,36 +40,20 @@ function App() {
         <ClerkProvider publishableKey={clerkPubKey}>
             <ChakraProvider>
               <BrowserRouter>
-                  <Routes>
-                        <Route
-                        path="/"
-                        element={<WelcomePage />} />
-                        <Route
-                        path="/sign-up/*"
-                        element={
-                            <div style={{marginTop: 100, display: "flex", justifyContent: "space-evenly"}}>
-                                <SignUp routing="path" path="/sign-up" afterSignUpUrl='/'/>
-                            </div>}
-                        />
-                        <Route
-                        path="/login/*"
-                        element={
-                            <div style={{marginTop: 100, display: "flex", justifyContent: "space-evenly"}}>
-                            <SignIn routing="path" path="/login" afterSignInUrl='/'/>
-                            </div>}
-                        />
-                        <Route
-                        path="/test-database/*"
-                        element={<TestDatabase/>}>
-                        </Route>
-                        <Route
-                        path="/group-travel/*"
-                        element={<GroupTravel/>}>
-                        </Route>
-                        <Route
-                        path="/forms/*"
-                        element={<Forms/>}>
-                        </Route>
+                    <Routes>
+                        <Route path="/" element={<PrivateRoute><WelcomePage /></PrivateRoute>} />
+                        <Route path="/sign-up/*" element={<> <AuthRedirect to="/" />
+                        <div style={{marginTop: 100, display: "flex", justifyContent: "space-evenly"}}>
+                         <SignUp />
+                         </div>
+                         </>} />
+                        <Route path="/login/*" element={<><AuthRedirect to="/"/>
+                        <div style={{marginTop: 100, display: "flex", justifyContent: "space-evenly"}}>
+                        <SignIn />
+                        </div></>} />
+                        <Route path="/test-database/*" element={<TestDatabase/>}></Route>
+                        <Route path="/group-travel/*" element={<GroupTravel/>}></Route>
+                        <Route path="/forms/*" element={<Forms/>}></Route>
                     </Routes>
               </BrowserRouter>
             </ChakraProvider>
