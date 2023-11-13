@@ -5,7 +5,7 @@ This module contains the routes for the Flask server.
 from flask import Blueprint, jsonify, request
 
 from . import db
-from .models import StudentTravelRegistrationFormDay, User
+from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm
 
 main = Blueprint("main", __name__)
 
@@ -84,6 +84,36 @@ def submit_student_travel_registration_form_day():
     db.session.commit()
 
     return jsonify({"message": "Form submitted successfully"}), 200
+
+
+@main.route("/submit-travel-authorization-request-form", methods=["POST"])
+def submit_student_travel_registration_form_day():
+    data = request.json
+    travel_authorization_request_form = TravelAuthorizationRequestForm(
+        name=data.get("name"),
+        address=data.get("address"),
+        city=data.get("city"),
+        state=data.get("state"),
+        zip=data.get("zip"),
+        kean_id=data.get("kean_id"),
+        title=data.get("title"),
+        location=data.get("location"),
+        email=data.get("email"),
+        ext=data.get("ext"),
+        departure_time=data.get("departure_time"),
+        return_date=data.get("return_date"),
+        destination=data.get("destination"),
+        conference_name=data.get("conference_name"),
+    )
+
+    if TravelAuthorizationRequestForm.query.filter_by(email=data["email"]).first():
+        return jsonify({"message": "User already submitted form. Wait for approval."}), 200
+
+    db.session.add(travel_authorization_request_form)
+    db.session.commit()
+
+    return jsonify({"message": "Form submitted successfully"}), 200
+
 
 # Test Route
 @main.route("/")
