@@ -2,12 +2,30 @@
 This module contains the routes for the Flask server.
 """
 
+import os
+import smtplib
+
+# from email import message
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from flask import Blueprint, jsonify, request
 
 from . import db
 from .models import StudentTravelRegistrationFormDay, User
 
 main = Blueprint("main", __name__)
+
+
+email_sequence = {
+    "current_step": 0,
+    "steps": [
+        "gordonza@kean.edu",
+        "sergabri@kean.edu",
+        "ibarrjou@kean.edu",
+        "dicosimd@kean.edu",
+    ],
+}
 
 
 @main.route("/users")
@@ -78,12 +96,83 @@ def submit_student_travel_registration_form_day():
     )
 
     if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
-        return jsonify({"message": "User already submitted form. Wait for approval."}), 200
+        return (
+            jsonify({"message": "User already submitted form. Wait for approval."}),
+            200,
+        )
 
     db.session.add(student_registration_day)
     db.session.commit()
 
-    return jsonify({"message": "Form submitted successfully"}), 200
+    #! working on emails
+    # TODO Replace hardcoded email with variable
+
+    current_step = email_sequence["current_step"]
+    sender_email = "gordonza@kean.edu"
+    try:
+        receiver_email = email_sequence["steps"][current_step]
+    except IndexError:
+        return (
+            jsonify(
+                {
+                    "message": "Form submitted but email not sent. No more people in sequence."
+                }
+            ),
+            200,
+        )
+    password = os.environ.get("EMAIL_PASSWORD")
+
+    # Create a MIMEMultipart message
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "email test"
+    # message["From"] = sender_email
+    message["From"] = "TravelTeam"
+    message["To"] = receiver_email
+
+    text = f"""\
+    Hi {receiver_email.split('@', maxsplit=1)[0]},
+    This is a test email sent from the Flask server.
+    """
+
+    if current_step + 1 < len(email_sequence["steps"]):
+        next_step = email_sequence["steps"][current_step + 1]
+    else:
+        next_step = "Nobody"
+
+    html = f"""\
+    <html>
+        <body>
+            <p>Hi {receiver_email.split('@', maxsplit=1)[0]},<br>
+             This is a test email sent from the Flask server.<br>
+             You are person number {current_step + 1} in the email sequence.
+             Next it will be sent to {next_step}.
+            </p>
+        </body>
+    </html>
+    """
+
+    # Turn these into plain/html MIMEText objects
+    part1 = MIMEText(text, "plain")
+    part2 = MIMEText(html, "html")
+
+    # Add HTML/plain-text parts to MIMEMultipart message
+    message.attach(part1)
+    message.attach(part2)
+
+    # Send email
+    # Send email
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+
+    # Move to the next step
+    email_sequence["current_step"] += 1
+
+    return (
+        jsonify({"message": "Form submitted and email sent to the next person."}),
+        200,
+    )
+
 
 # Test Route
 @main.route("/")
