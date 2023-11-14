@@ -19,9 +19,14 @@ import {
 
 export default function Forms() {
   
-  const [showReleaseText, setShowReleaseText] = useState(false);
-  const [showSection_3_details, setSection_3_details] = useState(false);
-  const [showSection_4_details, setSection_4_details] = useState(false);
+ /*  const [showReleaseText, setShowReleaseText] = useState(false); */
+  const [showDetails, setShowDetails] = useState({
+    section2: false,
+    section3: false,
+    section4: false,
+    section5: false,
+    section6: false,
+  });
   const [usingUniversityTransport, setUsingUniversityTransport] = useState('');
   const [isUnderage, setIsUnderage] = useState(false);
   const [formData, setFormData] = useState({
@@ -42,38 +47,46 @@ export default function Forms() {
     zip: '',
     agreeToRelease: false,
     agreeToConduct: false,
+    usingUniversityTransport: false,
     transportationWaiver: false,
     agreeToFerpa: false,
     financialObligation: false,
     participantCertification: false,
+    paidTicketPrice:'',
+    otherActivityCosts: '',
+    totalFinancialObligation: 0
   });
-
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: checked,
-    });
-  };
 
   const handleTransportationChange = (value) => {
     setUsingUniversityTransport(value);
   };
-  
 
-  const handleDateOfBirthChange = (e) => {
-    handleInputChange(e); // existing input change handler
-    const dob = new Date(e.target.value);
-    const today = new Date();
-    const age = today.getFullYear() - dob.getFullYear();
-    setIsUnderage(age < 18);
+  const toggleDetail = (section) => {
+    setShowDetails((prevDetails) => ({ ...prevDetails, [section]: !prevDetails[section] }));
   };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+    setFormData((currentFormData) => {
+      const newValue = type === 'checkbox' ? checked : value;
+      const updatedFormData = { ...currentFormData, [name]: newValue };
+
+      //Calculate Financial Obligation
+      if (name === 'paidTicketPrice' || name === 'otherActivityCosts') {
+        const paidTicketPrice = parseFloat(updatedFormData.paidTicketPrice) || 0;
+        const otherActivityCosts = parseFloat(updatedFormData.otherActivityCosts) || 0;
+        updatedFormData.totalFinancialObligation = paidTicketPrice + otherActivityCosts;
+      }
+
+      //Get parent/guardian information if age < 18
+      if (name === 'date_of_birth') {
+        const dob = new Date(value);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear();
+        setIsUnderage(age < 18);
+      }
+
+      return updatedFormData;
     });
   };
 
@@ -94,9 +107,15 @@ export default function Forms() {
   return (
     <>
       <NavBar />
-      <Box p={4}>
+      <Box p={4} spacing={4} bg="gray.100" w="50%" mx="auto" borderRadius="lg">
         <form onSubmit={handleSubmit}>
-          <Stack spacing={4} bg="gray.50" w="50%" mx="auto" borderRadius="lg" p={6}>
+          <Stack>
+            <FormControl>
+              
+              <FormLabel>Student Travel Registration Form - Day Trip (Student)</FormLabel>
+
+            </FormControl>
+            
             <HStack>
               <FormControl isRequired flex="3"> {/* Increased flex value for more space */}
                 <FormLabel htmlFor="event_name">Event Name</FormLabel>
@@ -131,9 +150,10 @@ export default function Forms() {
               </FormControl>
             </HStack>
 
-            <FormControl>
-              <FormLabel  style={{ color: 'skyblue' }}>1. PARTICIPANT INFORMATION (STUDENT)</FormLabel>
-            </FormControl>
+
+       
+            {/* Participant Information (Student) - Section 1 */}
+            <FormLabel htmlFor="first_name" style={{ color: 'blue' }}>1. PARTICIPANT INFORMATION (STUDENT)</FormLabel>
             <HStack spacing={4}>
               <FormControl isRequired>
                 <FormLabel htmlFor="first_name">First Name</FormLabel>
@@ -159,7 +179,7 @@ export default function Forms() {
               </FormControl>
               <FormControl isRequired>
                 <FormLabel htmlFor="date_of_birth">Date of Birth</FormLabel>
-                <Input type="date" id="date_of_birth" name="date_of_birth" onChange={handleDateOfBirthChange} value={formData.date_of_birth} />
+                <Input type="date" id="date_of_birth" name="date_of_birth" onChange={handleInputChange} value={formData.date_of_birth} />
               </FormControl>        
             </HStack>
             <HStack spacing={4}>
@@ -181,19 +201,19 @@ export default function Forms() {
               </FormControl>
             </HStack>
 
-            {/* RELEASE AND INDEMNIFICATION SECTION 2 */}
-            <FormLabel  style={{ color: 'skyblue' }}>2. RELEASE AND INDEMNIFICATION AGREEMENT FOR STUDENT TRAVEL</FormLabel>
+            {/* Release and Indemnification Agreement for student travel - Section 2 */}
+            <FormLabel  style={{ color: 'blue' }}>2. RELEASE AND INDEMNIFICATION AGREEMENT FOR STUDENT TRAVEL</FormLabel>
              <FormControl display="flex" alignItems="center">
-             <Checkbox name="agreeToRelease" isChecked={formData.agreeToRelease} onChange={handleCheckboxChange}>
+             <Checkbox name="agreeToRelease" isChecked={formData.agreeToRelease} onChange={handleInputChange}>
                 I agree to the Release and Indemnification Agreement
               </Checkbox>
-              <Button size="sm" ml={2} onClick={() => setShowReleaseText(!showReleaseText)}>
-                {showReleaseText ? 'Hide Details' : 'Show Details'}
+              <Button size="sm" ml={2} onClick={() => toggleDetail('section2')}>
+                {showDetails.section2 ? 'Hide Details' : 'Show Details'}
               </Button>
             </FormControl>
 
              {/* Collapsible panel for the Release and Indemnification Agreement text */}
-             <Collapse in={showReleaseText}>
+             <Collapse in={showDetails.section2}>
               <Text fontSize="sm" p={4} borderWidth="1px" borderRadius="md">
                 In the event that I incur any physical or emotional injury or illness, or loss or
                 damages to personal property of any kind during my participation in the
@@ -229,14 +249,14 @@ export default function Forms() {
               {isUnderage && (
               <Box>
                 <Text>Parent/Guardians Information (Required for participants under 18)</Text>
-                <HStack>
+                <HStack >
                   <FormControl isRequired>
-                    <FormLabel htmlFor="parent_name">Parent/Guardians Name</FormLabel>
+                    <FormLabel htmlFor="parent_name">Parent/Guardian Name</FormLabel>
                     <Input id="parent_name" name="parent_name" onChange={handleInputChange} />
                   </FormControl>
 
                   <FormControl isRequired>
-                    <FormLabel htmlFor="parent_signature">Parent/Guardians Signature</FormLabel>
+                    <FormLabel htmlFor="parent_signature">Parent/Guardian Signature</FormLabel>
                     <Input id="parent_signature" name="parent_signature" onChange={handleInputChange} />
                   </FormControl>
                   
@@ -245,24 +265,25 @@ export default function Forms() {
                     <Input id="parent_signature_date" name="parent_signature_date" onChange={handleInputChange} />
                   </FormControl>
 
-                  <FormControl isRequired>
+                </HStack>
+                
+                <FormControl isRequired>
                     <FormLabel htmlFor="parent_contact_number">Parent/Guardian&apos;s Contact Number</FormLabel>
                     <Input id="parent_contact_number" name="parent_contact_number" onChange={handleInputChange} />
                   </FormControl>
-                </HStack>
               </Box>
             )}
 
              {/* Participant Conduct Agreement - Section 3 */}
-            <FormLabel  style={{ color: 'skyblue' }}>3. PARTICIPANT CONDUCT AGREEMENT</FormLabel>
+            <FormLabel  style={{ color: 'blue' }}>3. PARTICIPANT CONDUCT AGREEMENT</FormLabel>
             <FormControl>
               <Checkbox name="agreeToConduct" onChange={handleInputChange}>I agree to the Participant Conduct Agreement</Checkbox>
-                <Button size="sm" ml={2} onClick={() => setSection_3_details(!showSection_3_details)}>
-                    {showReleaseText ? 'Hide Details' : 'Show Details'}
+                <Button size="sm" ml={2} onClick={() => toggleDetail('section3')}>
+                    {showDetails.section3 ? 'Hide Details' : 'Show Details'}
                 </Button>  
 
             </FormControl>
-            <Collapse in={showSection_3_details}>
+            <Collapse in={showDetails.section3}>
                   <Text fontSize="sm" p={4} borderWidth="1px" borderRadius="md">        
                   I shall comply with all applicable laws of any jurisdiction in which I may travel
                   and all policies of Kean University including, but not limited to, its alcohol and
@@ -286,7 +307,7 @@ export default function Forms() {
             </Collapse>
 
             {/* Transportation- section 4 */}  
-            <FormLabel  style={{ color: 'skyblue' }}>4. ARE YOU UTILIZING THE KEAN UNIVERSITY PROVIDED TRANSPORTATION AS A PART OF THE EVENT/ACTIVITY?</FormLabel>
+            <FormLabel  style={{ color: 'blue' }}>4. ARE YOU UTILIZING THE KEAN UNIVERSITY PROVIDED TRANSPORTATION AS A PART OF THE EVENT/ACTIVITY?</FormLabel>
             <FormControl isRequired>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               <RadioGroup onChange={handleTransportationChange} value={usingUniversityTransport}>
@@ -299,14 +320,14 @@ export default function Forms() {
 
             {usingUniversityTransport === 'no' && (
                <FormControl display="flex" alignItems="center">
-                  <Checkbox name="transportationWaiver" isChecked={formData.transportationWaiver} onChange={handleCheckboxChange}>I agree to the Transportation Waiver</Checkbox>
-                  <Button size="sm" ml={2} onClick={() => setSection_4_details(!showSection_4_details)}>
-                  {showReleaseText ? 'Hide Details' : 'Show Details'}
+                  <Checkbox name="transportationWaiver" isChecked={formData.transportationWaiver} onChange={handleInputChange}>I agree to the Transportation Waiver</Checkbox>
+                  <Button size="sm" ml={2} onClick={() => toggleDetail('section4')}>
+                  {showDetails.section4 ? 'Hide Details' : 'Show Details'}
                   </Button>         
                 </FormControl>
             )}
             
-            <Collapse in={showSection_4_details}>
+            <Collapse in={showDetails.section4}>
                   <Text fontSize="sm" p={4} borderWidth="1px" borderRadius="md">        
                     TRANSPORTATION WAIVER: I understand that the activity in which I will participate is voluntary and does not include
                     transportation to or from the activity. I will assume all responsibility for getting to and from the above named activity.       
@@ -315,15 +336,71 @@ export default function Forms() {
 
 
             {/* FERPA - Section 5 */}  
-            <FormLabel  style={{ color: 'skyblue' }}>5. FERPA (FAMILY EDUCATIONAL RIGHTS AND PRIVACY ACT) INFORMATION RELEASE</FormLabel>
-            <Checkbox name="agreeToFerpa" onChange={handleInputChange}>I agree to the FERPA Information Release</Checkbox>
-             
-            {/* Student Financial Obligation - Section 6 */}  
-            <FormLabel  style={{ color: 'skyblue' }}>6. STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT</FormLabel>
-            <Checkbox name="financialObligation" onChange={handleInputChange}>I acknowledge the Financial Obligation</Checkbox>
+            <FormControl>
+              <FormLabel  style={{ color: 'blue' }}>5. FERPA (FAMILY EDUCATIONAL RIGHTS AND PRIVACY ACT) INFORMATION RELEASE</FormLabel>
+              <Checkbox name="agreeToFerpa" onChange={handleInputChange}>I agree to the FERPA Information Release</Checkbox>
+              <Button size="sm" ml={2} onClick={() => toggleDetail('section5')}>
+                    {showDetails.section5 ? 'Hide Details' : 'Show Details'}
+              </Button>  
+            </FormControl>
+            <Collapse in={showDetails.section5}>
+              I authorize Kean University to release, to my parent(s) or legal guardian(s),
+              contact information and general information related to the abovementioned
+              event/activity, in order for my parent/guardian to receive health, safety, and
+              security information related to this program. I understand the purpose of this
+              release is to provide health, welfare, and safety information to my parent(s).
+              Further, should an incident occur during the event/activity, I authorize the
+              release of my name / statement as a Complainant, Accused Student, or
+              Witness during the student conduct process as outlined in the Kean University
+              Student Code of Conduct.
+              This release will remain in effect until revoked by me in writing and delivered to
+              the Kean University Office of Student Affairs. 
+            </Collapse>
 
+        
+            {/* Student Financial Obligation - Section 6 */}  
+            <FormLabel  style={{ color: 'blue' }}>6. STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT</FormLabel>
+
+            <HStack>
+              <FormControl isRequired>
+                <FormLabel htmlFor="paidTicketPrice">Paid Ticket Price</FormLabel>
+                <Input id="paidTicketPrice" name="paidTicketPrice" type="number" onChange={handleInputChange} placeholder="Enter paid ticket price"/>
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel htmlFor="otherActivityCosts">Other Activity Costs</FormLabel>
+                <Input id="otherActivityCosts" name="otherActivityCosts" type="number" onChange={handleInputChange} placeholder="Enter other activity costs"/>
+              </FormControl>
+            </HStack>
+      
+            <FormControl isDisabled>
+              <FormLabel htmlFor="totalFinancialObligation">Total Financial Obligation</FormLabel>
+              <Input id="totalFinancialObligation" name="totalFinancialObligation" type="number" value={formData.totalFinancialObligation} placeholder="Total will be calculated automatically" readOnly/>
+            </FormControl>
             
-            <FormLabel  style={{ color: 'skyblue' }}>7. EMERGENCY CONTACT INFORMATION</FormLabel>
+            <FormControl>
+              <Checkbox name="financialObligation" onChange={handleInputChange}>I acknowledge the Financial Obligation</Checkbox>
+              <Button size="sm" ml={2} onClick={() => toggleDetail('section6')}>
+                      {showDetails.section6 ? 'Hide Details' : 'Show Details'}
+              </Button>  
+            </FormControl>
+
+            <Collapse in={showDetails.section6}>
+                  <Text fontSize="sm" p={4} borderWidth="1px" borderRadius="md">        
+                  STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT:
+                  I understand and acknowledge that I have paid the ticket price of ${formData.paidTicketPrice} for each ticket, which represents a substantially reduced cost for the activity and may include without limitation, admission ticket, bus,
+                  food, etc... I understand that the University has: 1) purchased a limited amount of program admission tickets for full face value; 2) reserved and paid
+                  for bus transportation; and/or 3) reserved and paid for meals for the student activity. Therefore, I agree that I shall have no right to a refund for any part
+                  of the ticket price that I have paid. In addition, if I or my guest fail to attend and participate in the student activity for any reason, I understand that I will
+                  be financially responsible to the University for the full cost of the student activity which totals ${formData.totalFinancialObligation} per ticket. Further, if I fail to make such
+                  payment to the University, the University may, at its option, put a financial hold on my record. As a result, I understand that I may be prohibited from
+                  registering for future courses at the University and obtaining a release of my academic transcript.
+                  The Kean University student will be financially responsible to the University for the full cost of the student activity if their registered guest fails to fully
+                  attend and participate in the student activity for any reason     
+                  </Text>
+            </Collapse>
+            
+            {/*Emergency Contact Information - Section 7 */}  
+            <FormLabel  style={{ color: 'blue' }}>7. EMERGENCY CONTACT INFORMATION</FormLabel>
             <FormLabel  > In the event of an emergency, please write the name and contact information for the person that you would like us to contact for you.</FormLabel>
 
             <HStack>
@@ -336,8 +413,6 @@ export default function Forms() {
                 <Input id="relationToParticipant" name="relationToParticipant" onChange={handleInputChange} />
               </FormControl>
             </HStack>
-
-            {/* Emergency Contact Information - Section 7*/}  
             <HStack spacing={4}>
               <FormControl  flex={1}isRequired>
                 <FormLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FormLabel>
@@ -350,7 +425,7 @@ export default function Forms() {
             </HStack>
     
             {/* Participant certification - Section 8 */}  
-            <FormLabel  style={{ color: 'skyblue' }}>8. PARTICIPANT CERTIFICATION</FormLabel>
+            <FormLabel  style={{ color: 'blue' }}>8. PARTICIPANT CERTIFICATION</FormLabel>
             <Checkbox name="participantCertification" onChange={handleInputChange}>I certify that the provided information is accurate</Checkbox>
 
             <Flex justify="space-between">
