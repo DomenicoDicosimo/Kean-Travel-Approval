@@ -7,6 +7,7 @@ import {ChakraProvider} from "@chakra-ui/react";
 import GroupTravel from "./components/GroupTravel"
 import WelcomePage from "./components/WelcomePage";
 import TestDatabase from "./components/TestDatabase";
+import Dashboard from "./components/Dashboard"
 import Forms from "./components/StudentTravelRegistrationFormDay";
 
 if(!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
@@ -49,6 +50,10 @@ function App() {
                         <Route
                         path="/forms/*"
                         element={<Forms/>}>
+                        </Route>
+                        <Route
+                        path="/dashboard/*"
+                        element={<Dashboard/>}>
                         </Route>
                     </Routes>
               </BrowserRouter>
