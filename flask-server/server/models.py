@@ -62,6 +62,8 @@ class StudentTravelRegistrationFormDay(db.Model):
     city = db.Column(db.String(255))
     state = db.Column(db.String(2))
     zip = db.Column(db.String(10))
+    date_assigned = db.Column(db.DateTime)
+    completion_date = db.Column(db.DateTime)
 
     def to_dict(self):
         return {

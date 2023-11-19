@@ -4,6 +4,7 @@ This module contains the routes for the Flask server.
 
 import os
 import smtplib
+from datetime import date
 
 # from email import message
 from email.mime.multipart import MIMEMultipart
@@ -28,6 +29,7 @@ email_sequence = {
 }
 
 
+# USERS
 @main.route("/users")
 def get_all_users():
     """
@@ -64,6 +66,7 @@ def add_user():
     return jsonify({"message": "User added successfully!"}), 200
 
 
+# FORMS
 @main.route("/get-user-submitted-forms", methods=["GET"])
 def get_user_submitted_forms():
     """
@@ -103,6 +106,7 @@ def submit_student_travel_registration_form_day():
         city=data.get("city"),
         state=data.get("state"),
         zip=data.get("zip"),
+        date_assigned=date.today(),
     )
 
     if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
