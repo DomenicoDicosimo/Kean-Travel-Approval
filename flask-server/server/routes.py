@@ -65,6 +65,13 @@ def add_user():
     db.session.commit()
     return jsonify({"message": "User added successfully!"}), 200
 
+#Route to add user from clerk if not in Users table
+@main.route("/check-user-exists", methods=['GET'])
+def check_user_exists():
+    user_id = request.args.get('id')
+    user = User.query.filter_by(id=user_id).first()
+    
+    return jsonify(userExists=user is not None)
 
 # FORMS
 @main.route("/get-user-submitted-forms", methods=["GET"])
