@@ -69,10 +69,8 @@ def get_user_submitted_forms():
     """
     Returns a JSON representation of all forms for the associated user in the database
     """
-    data = request.get_json()
-    target_email = data['email']
-    forms = StudentTravelRegistrationFormDay().query.where(
-        f"student_travel_registration_form_day.email == '{target_email}'")
+    target_email = request.args.get("email")
+    forms = StudentTravelRegistrationFormDay.query.filter_by(email=target_email).all()
     return jsonify([f.to_dict() for f in forms])
 
 
