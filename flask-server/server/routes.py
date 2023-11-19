@@ -64,6 +64,18 @@ def add_user():
     return jsonify({"message": "User added successfully!"}), 200
 
 
+@main.route("/get-user-submitted-forms", methods=["GET"])
+def get_user_submitted_forms():
+    """
+    Returns a JSON representation of all forms for the associated user in the database
+    """
+    data = request.get_json()
+    target_email = data['email']
+    forms = StudentTravelRegistrationFormDay().query.where(
+        f"student_travel_registration_form_day.email == '{target_email}'")
+    return jsonify([f.to_dict() for f in forms])
+
+
 @main.route("/student-travel-registration-form-day")
 def get_all_student_forms():
     """
