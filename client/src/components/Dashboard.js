@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import NavBar from "./NavBar";
 import {RedirectToSignIn, SignedIn, SignedOut} from "@clerk/clerk-react";
 import {
@@ -15,11 +15,28 @@ import {
     Divider,
     Badge, HStack, Wrap, WrapItem
 } from "@chakra-ui/react";
+import axios from "axios";
+
 
 export default function Dashboard() {
+  const url = "http://127.0.0.1:5000/get-user-submitted-forms";
+  const [data, setData] = useState([]);
+
+  const loadUserSubmittedForms = () => {
+    console.log(axios.get(url, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => setData(res.data)));
+  };
+
+  useEffect(() => {
+    loadUserSubmittedForms();
+  }, []);
+  window.onload = {
+      loadUserSubmittedForms
+  }
     return (
         <>
             <NavBar/>
+            <p>{data}</p>
             <SignedIn>
                 <Grid height="calc(90vh)"
                       templateRows="repeat(2, 1fr)"
