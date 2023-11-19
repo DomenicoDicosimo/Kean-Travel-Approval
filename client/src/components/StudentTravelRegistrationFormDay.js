@@ -19,7 +19,6 @@ export default function Forms() {
     city: '',
     state: '',
     zip: '',
-    date_assigned: '',
   });
 
   const handleInputChange = (e) => {
