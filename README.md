@@ -22,7 +22,7 @@ git clone https://github.com/DomenicoDicosimo/Kean-Travel-Approval.git
 Clone this repository from GitHub (SSH)
 
 ```shell
-git git@github.com:DomenicoDicosimo/Kean-Travel-Approval.git
+git clone git@github.com:DomenicoDicosimo/Kean-Travel-Approval.git
 ```
 
 ### Setup backend
