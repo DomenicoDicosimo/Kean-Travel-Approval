@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useCallback} from 'react'
 import NavBar from "./NavBar";
 import {useUser, RedirectToSignIn, SignedIn, SignedOut} from "@clerk/clerk-react";
 import {
@@ -25,18 +25,16 @@ export default function Dashboard() {
     const url = `http://127.0.0.1:5000/get-user-submitted-forms?email=${(email)}`;
     const [data, setData] = useState([]);
 
-     const loadUserSubmittedForms = () => {
+    const loadUserSubmittedForms = useCallback(() => {
         console.log(axios.get(url, {headers: {'Content-Type': 'application/json'}})
             .then((res) => setData(res.data)))
-    };
+    }, [url]);
  
 
     useEffect(() => {
         loadUserSubmittedForms();
-    }, [email]);
-/*   window.onload = {
-      loadUserSubmittedForms
-  } */
+    }, [loadUserSubmittedForms]); 
+
     return (
         <>
             <NavBar/>    
