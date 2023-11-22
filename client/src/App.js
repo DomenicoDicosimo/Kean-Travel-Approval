@@ -5,7 +5,9 @@ import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 import {ChakraProvider} from "@chakra-ui/react";
 import GroupTravel from "./components/GroupTravel"
 import WelcomePage from "./components/WelcomePage";
-import Forms from "./components/StudentTravelRegistrationFormDay";
+import Dashboard from "./components/Dashboard"
+import StudentTravelRegistrationFormDay from "./components/StudentTravelRegistrationFormDay";
+import TravelAuthorizationRequestForm from "./components/TravelAuthorizationRequestForm"; 
 import TestDatabase from "./components/TestDatabase";
 
 
@@ -53,7 +55,12 @@ function App() {
                         </div></>} />
                         <Route path="/test-database/*" element={<TestDatabase/>}></Route>
                         <Route path="/group-travel/*" element={<GroupTravel/>}></Route>
-                        <Route path="/forms/*" element={<Forms/>}></Route>
+                        <Route path="/student-travel-registration-form-day" element={<StudentTravelRegistrationFormDay />} />
+                        <Route path="/travel-authorization-form" element={<TravelAuthorizationRequestForm />} />
+                        <Route
+                        path="/dashboard/*"
+                        element={<Dashboard/>}>
+                        </Route>
                     </Routes>
               </BrowserRouter>
             </ChakraProvider>
