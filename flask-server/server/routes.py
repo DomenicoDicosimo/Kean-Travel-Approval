@@ -13,10 +13,76 @@ from email.mime.text import MIMEText
 from flask import Blueprint, jsonify, request
 
 from . import db
-from .models import StudentTravelRegistrationFormDay, User
+from .models import StudentTravelRegistrationFormDay, User, Receipt, TravelAuthorizationRequestForm
+
+#New imports for uploading receipts
+#******************************************
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 main = Blueprint("main", __name__)
 
+#***************IGNORE THIS PART FOR THE MOMENT - UPLOAD RECEIPT FUNCTIONALITY ***********#
+
+UPLOAD_FOLDER ='/uploaded_receipts'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        
+
+@main.route('/upload_receipt', methods=['POST'])
+def upload_receipt():
+      if 'file' not in request.files:
+          return jsonify({"error": "No file part"}) , 400
+      
+      file = request.files['file']
+      
+      if file.filename == '':
+          return jsonify({"error" : "No selected file"}), 400
+      
+      if file and allowed_file(file.filename):
+          filename = secure_filename(file.filename)
+          file_path = os.path.join(UPLOAD_FOLDER, filename)
+          file.save(file_path)
+          
+          # Assuming the user ID is provided as part of the request
+          user_id = request.form.get('user_id')
+          
+          new_receipt = Receipt(
+              user_id=user_id, 
+              file_path=file_path, 
+              upload_date=datetime.utcnow()
+              )
+          db.session.add(new_receipt)
+          db.session.commit()
+          
+          return jsonify({"message": "File uploaded successfully", "file_path": file_path}), 200
+      
+      return jsonify({"error": "Invalid file type"}), 400
+  
+@main.route('/get_receipts', methods=["GET"])
+def get_receipts():
+    
+    try:
+        receipts = Receipt.query.all()
+        receipts_data = []
+        for receipt in receipts:
+            receipt_dict = {
+               "id": receipt.id,
+                "user_id": receipt.user_id,
+                "file_path": receipt.file_path,
+                "upload_date": receipt.upload_date.strftime('%Y-%m-%d %H:%M:%S') if receipt.upload_date else None
+            }
+            receipts_data.append(receipt_dict)
+            
+        #Return data as JSON
+        return jsonify({"receipts" : "receipts_data"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+#**************************************************************************************************************  
 
 email_sequence = {
     "current_step": 0,
@@ -73,6 +139,7 @@ def check_user_exists():
     
     return jsonify(userExists=user is not None)
 
+
 # FORMS
 @main.route("/get-user-submitted-forms", methods=["GET"])
 def get_user_submitted_forms():
@@ -95,6 +162,34 @@ def get_all_student_forms():
     forms = StudentTravelRegistrationFormDay().query.all()
     return jsonify([f.to_dict() for f in forms])
 
+@main.route("/submit-travel-authorization-request-form", methods=["POST"])
+def submit_student_travel_authorization_request_form():
+    data = request.json
+    travel_authorization_request_form = TravelAuthorizationRequestForm(
+        name=data.get("name"),
+        address=data.get("address"),
+        city=data.get("city"),
+        state=data.get("state"),
+        zip=data.get("zip"),
+        kean_id=data.get("kean_id"),
+        title=data.get("title"),
+        location=data.get("location"),
+        email=data.get("email"),
+        ext=data.get("ext"),
+        departure_time=data.get("departure_time"),
+        return_date=data.get("return_date"),
+        destination=data.get("destination"),
+        conference_name=data.get("conference_name"),
+    )
+
+    if TravelAuthorizationRequestForm.query.filter_by(email=data["email"]).first():
+        return jsonify({"message": "User already submitted form. Wait for approval."}), 200
+
+    db.session.add(travel_authorization_request_form)
+    db.session.commit()
+
+    return jsonify({"message": "Form submitted successfully"}), 200
+
 
 @main.route("/submit-student-travel-registration-form-day", methods=["POST"])
 def submit_student_travel_registration_form_day():
@@ -115,8 +210,28 @@ def submit_student_travel_registration_form_day():
         city=data.get("city"),
         state=data.get("state"),
         zip=data.get("zip"),
-        date_assigned=date.today(),
+        
+        #new fields -- ignore the data below if using old form
+        parent_name=data.get('parent_name'),
+        parent_signature=data.get('parent_signature'),
+        parent_signature_date=data.get('parent_signature_date'),
+        parent_contact_number=data.get('parent_contact_number'),
+        paid_ticket_price=data.get('paidTicketPrice'),
+        other_activity_costs=data.get('otherActivityCosts'),
+        total_financial_obligation=data.get('totalFinancialObligation'),
+        emergency_contact_name=data.get('emergencyContactName'),
+        relation_to_participant=data.get('relationToParticipant'),
+        emergency_contact_phone=data.get('emergencyContactPhone'),
+        emergency_contact_address=data.get('emergencyContactAddress'),
+        agree_to_release=data.get('agreeToRelease'),
+        agree_to_conduct=data.get('agreeToConduct'),
+        transportation_waiver=data.get('transportationWaiver'),
+        agree_to_ferpa=data.get('agreeToFerpa'),
+        financial_obligation=data.get('financialObligation'),
+        participant_certification=data.get('participantCertification'),
+          
     )
+    """ date_assigned=date.today(), """
 
     if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
         return (
