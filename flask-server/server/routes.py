@@ -5,7 +5,7 @@ This module contains the routes for the Flask server.
 from flask import Blueprint, jsonify, request
 
 from . import db
-from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm
+from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm,TravelEthicsForm
 
 main = Blueprint("main", __name__)
 
@@ -113,6 +113,96 @@ def submit_student_travel_registration_form_day():
     db.session.commit()
 
     return jsonify({"message": "Form submitted successfully"}), 200
+
+
+@main.route("/travel_ethics_form")
+def get_all_travel_ethics_forms():
+    """
+    Returns a JSON representation of all student-day forms in the database.
+    """
+
+    forms = TravelEthicsForm().query.all()
+    return jsonify([f.to_dict() for f in forms])
+
+@main.route('/submit_travel_ethics_form', methods=['POST'])
+def submit_travel_ethics_form():
+    
+    data = request.json  
+
+    # Validate user existence 
+    user_id = data.get('UserID')
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+   
+    Travel_Ethics_Form = TravelEthicsForm(
+        UserID=user_id,
+        SubmissionDate=data['SubmissionDate'],
+        FormType=data['FormType'],
+        FundingSource=data['FundingSource'],
+        Name=data['Name'],
+        Address=data['Address'],
+        City=data['City'],
+        State=data['State'],
+        Zip=data['Zip'],
+        KeanID=data['KeanID'],
+        Title=data['Title'],
+        Location=data['Location'],
+        Email=data['Email'],
+        Extension=data['Extension'],
+        DepartureDate=data['DepartureDate'],
+        DepartureTime=data['DepartureTime'],
+        ReturnDate=data['ReturnDate'],
+        ReturnTime=data['ReturnTime'],
+        DestinationCity=data['DestinationCity'],
+        DestinationState=data['DestinationState'],
+        ConferenceName=data['ConferenceName'],
+        UniversityFunds=data['UniversityFunds'],
+        GrantFunds=data['GrantFunds'],
+        PersonalFunds=data['PersonalFunds'],
+        OtherEmployeesTraveling=data['OtherEmployeesTraveling'],
+        ReasonForTravel=data['ReasonForTravel'],
+        GrantFundedProjectName=data['GrantFundedProjectName'],
+        SourceOfFunding=data['SourceOfFunding'],
+        BudgetedInGrantProposal=data['BudgetedInGrantProposal'],
+        InitialGrantAmount=data['InitialGrantAmount'],
+        HowCoveredIfNotBudgeted=data['HowCoveredIfNotBudgeted'],
+        Department=data['Department'],
+        Division=data['Division'],
+        Telephone=data['Telephone'],
+        Fax=data['Fax'],
+        Event=data['Event'],
+        Sponsor=data['Sponsor'],
+        SponsorInterestedParty=data['SponsorInterestedParty'],
+        StateOfficialRole=data['StateOfficialRole'],
+        FederalGovernmentSponsor=data['FederalGovernmentSponsor'],
+        NonprofitSponsor=data['NonprofitSponsor'],
+        NonprofitMember=data['NonprofitMember'],
+        NonprofitContracts=data['NonprofitContracts'],
+        Dates=data['Dates'],
+        OvernightAccommodationsRequired=data['OvernightAccommodationsRequired'],
+        OutOfStateTravelRequired=data['OutOfStateTravelRequired'],
+        EstimatedTotalCosts=data['EstimatedTotalCosts'],
+        TransportationCost=data['TransportationCost'],
+        MealsCost=data['MealsCost'],
+        AccommodationsCost=data['AccommodationsCost'],
+        RegistrationFeesCost=data['RegistrationFeesCost'],
+        AgencyPaysCost=data['AgencyPaysCost'],
+        SponsorPaysCost=data['SponsorPaysCost'],
+        EmployeePaysCost=data['EmployeePaysCost'],
+        OtherPaysCost=data['OtherPaysCost'],
+        OtherPayerName=data['OtherPayerName'],
+        ReasonForAttendance=data['ReasonForAttendance'],
+        SponsorOffersHonorarium=data['SponsorOffersHonorarium'],
+        StatusID=data['StatusID'],
+    )
+
+    db.session.add(Travel_Ethics_Form)
+    db.session.commit()
+
+    return jsonify({'message': 'Form submitted successfully'})
+
 
 
 # Test Route
