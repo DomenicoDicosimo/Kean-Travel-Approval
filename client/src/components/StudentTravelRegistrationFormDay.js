@@ -17,9 +17,8 @@ import {
   
 } from "@chakra-ui/react";
 
-export default function Forms() {
+export default function StudentTravelRegistrationFormDay() {
   
- /*  const [showReleaseText, setShowReleaseText] = useState(false); */
   const [showDetails, setShowDetails] = useState({
     section2: false,
     section3: false,
@@ -28,9 +27,11 @@ export default function Forms() {
     section6: false,
   });
   const [usingUniversityTransport, setUsingUniversityTransport] = useState('');
+  const [financialObligationOption, setFinancialObligationOption] = useState('');
   const [isUnderage, setIsUnderage] = useState(false);
   const [formData, setFormData] = useState({
     event_name: '',
+    date:'',
     host_organization: '',
     departure_time: '',
     approximate_return_time: '',
@@ -45,6 +46,7 @@ export default function Forms() {
     city: '',
     state: '',
     zip: '',
+
     agreeToRelease: false,
     agreeToConduct: false,
     usingUniversityTransport: false,
@@ -54,11 +56,24 @@ export default function Forms() {
     participantCertification: false,
     paidTicketPrice:'',
     otherActivityCosts: '',
-    totalFinancialObligation: 0
+    totalFinancialObligation: '',
+    
+    parent_name: '',
+    parent_signature: '',
+    parent_signature_date: '', 
+    parent_contact_number: '',
+    emergencyContactName: '',
+    relationToParticipant: '',
+    emergencyContactPhone: '',
+    emergencyContactAddress: '', 
   });
 
   const handleTransportationChange = (value) => {
     setUsingUniversityTransport(value);
+  };
+
+  const handleFinancialObligationChange = (value) => {
+    setFinancialObligationOption(value);
   };
 
   const toggleDetail = (section) => {
@@ -252,17 +267,17 @@ export default function Forms() {
                 <HStack >
                   <FormControl isRequired>
                     <FormLabel htmlFor="parent_name">Parent/Guardian Name</FormLabel>
-                    <Input id="parent_name" name="parent_name" onChange={handleInputChange} />
+                    <Input type="text" id="parent_name" name="parent_name" onChange={handleInputChange} />
                   </FormControl>
 
                   <FormControl isRequired>
                     <FormLabel htmlFor="parent_signature">Parent/Guardian Signature</FormLabel>
-                    <Input id="parent_signature" name="parent_signature" onChange={handleInputChange} />
+                    <Input type="text" id="parent_signature" name="parent_signature" onChange={handleInputChange} />
                   </FormControl>
                   
                   <FormControl isRequired>
                     <FormLabel htmlFor="parent_signature_date">Date</FormLabel>
-                    <Input id="parent_signature_date" name="parent_signature_date" onChange={handleInputChange} />
+                    <Input type="date" id="parent_signature_date" name="parent_signature_date" onChange={handleInputChange} />
                   </FormControl>
 
                 </HStack>
@@ -359,45 +374,59 @@ export default function Forms() {
 
         
             {/* Student Financial Obligation - Section 6 */}  
-            <FormLabel  style={{ color: 'blue' }}>6. STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT</FormLabel>
-
-            <HStack>
-              <FormControl isRequired>
-                <FormLabel htmlFor="paidTicketPrice">Paid Ticket Price</FormLabel>
-                <Input id="paidTicketPrice" name="paidTicketPrice" type="number" onChange={handleInputChange} placeholder="Enter paid ticket price"/>
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel htmlFor="otherActivityCosts">Other Activity Costs</FormLabel>
-                <Input id="otherActivityCosts" name="otherActivityCosts" type="number" onChange={handleInputChange} placeholder="Enter other activity costs"/>
-              </FormControl>
-            </HStack>
-      
-            <FormControl isDisabled>
-              <FormLabel htmlFor="totalFinancialObligation">Total Financial Obligation</FormLabel>
-              <Input id="totalFinancialObligation" name="totalFinancialObligation" type="number" value={formData.totalFinancialObligation} placeholder="Total will be calculated automatically" readOnly/>
-            </FormControl>
-            
-            <FormControl>
-              <Checkbox name="financialObligation" onChange={handleInputChange}>I acknowledge the Financial Obligation</Checkbox>
-              <Button size="sm" ml={2} onClick={() => toggleDetail('section6')}>
-                      {showDetails.section6 ? 'Hide Details' : 'Show Details'}
-              </Button>  
+            <FormLabel style={{ color: 'blue' }}>6. STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT</FormLabel>
+            <FormControl isRequired>
+              <FormLabel>Financial Obligation</FormLabel>
+              <RadioGroup onChange={handleFinancialObligationChange} value={financialObligationOption}>
+                <Stack direction="row">
+                  <Radio value="notApplicable">Not Applicable</Radio>
+                  <Radio value="required">Required: Complete Studdent Financial Obligation Acknowledgement Below.</Radio>
+                </Stack>
+              </RadioGroup>
             </FormControl>
 
-            <Collapse in={showDetails.section6}>
-                  <Text fontSize="sm" p={4} borderWidth="1px" borderRadius="md">        
-                  STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT:
-                  I understand and acknowledge that I have paid the ticket price of ${formData.paidTicketPrice} for each ticket, which represents a substantially reduced cost for the activity and may include without limitation, admission ticket, bus,
-                  food, etc... I understand that the University has: 1) purchased a limited amount of program admission tickets for full face value; 2) reserved and paid
-                  for bus transportation; and/or 3) reserved and paid for meals for the student activity. Therefore, I agree that I shall have no right to a refund for any part
-                  of the ticket price that I have paid. In addition, if I or my guest fail to attend and participate in the student activity for any reason, I understand that I will
-                  be financially responsible to the University for the full cost of the student activity which totals ${formData.totalFinancialObligation} per ticket. Further, if I fail to make such
-                  payment to the University, the University may, at its option, put a financial hold on my record. As a result, I understand that I may be prohibited from
-                  registering for future courses at the University and obtaining a release of my academic transcript.
-                  The Kean University student will be financially responsible to the University for the full cost of the student activity if their registered guest fails to fully
-                  attend and participate in the student activity for any reason     
-                  </Text>
-            </Collapse>
+            {financialObligationOption === 'required' && (
+            <>
+              <HStack>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="paidTicketPrice">Paid Ticket Price</FormLabel>
+                  <Input id="paidTicketPrice" name="paidTicketPrice" type="number" onChange={handleInputChange} placeholder="Enter paid ticket price"/>
+                </FormControl>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="otherActivityCosts">Other Activity Costs</FormLabel>
+                  <Input id="otherActivityCosts" name="otherActivityCosts" type="number" onChange={handleInputChange} placeholder="Enter other activity costs"/>
+                  </FormControl>
+                     
+                <FormControl >
+                <FormLabel htmlFor="totalFinancialObligation">Total Financial Obligation</FormLabel>
+                  <Input id="totalFinancialObligation" name="totalFinancialObligation" type="number" value={formData.totalFinancialObligation} placeholder="Total will be calculated automatically" readOnly/>
+                </FormControl>
+              </HStack>
+
+              
+              <FormControl>
+                <Checkbox name="financialObligation" onChange={handleInputChange}>I acknowledge the Financial Obligation</Checkbox>
+                <Button size="sm" ml={2} onClick={() => toggleDetail('section6')}>
+                        {showDetails.section6 ? 'Hide Details' : 'Show Details'}
+                </Button>  
+              </FormControl>
+
+              <Collapse in={showDetails.section6}>
+                    <Text fontSize="sm" p={4} borderWidth="1px" borderRadius="md">        
+                    STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT:
+                    I understand and acknowledge that I have paid the ticket price of ${formData.paidTicketPrice} for each ticket, which represents a substantially reduced cost for the activity and may include without limitation, admission ticket, bus,
+                    food, etc... I understand that the University has: 1) purchased a limited amount of program admission tickets for full face value; 2) reserved and paid
+                    for bus transportation; and/or 3) reserved and paid for meals for the student activity. Therefore, I agree that I shall have no right to a refund for any part
+                    of the ticket price that I have paid. In addition, if I or my guest fail to attend and participate in the student activity for any reason, I understand that I will
+                    be financially responsible to the University for the full cost of the student activity which totals ${formData.totalFinancialObligation} per ticket. Further, if I fail to make such
+                    payment to the University, the University may, at its option, put a financial hold on my record. As a result, I understand that I may be prohibited from
+                    registering for future courses at the University and obtaining a release of my academic transcript.
+                    The Kean University student will be financially responsible to the University for the full cost of the student activity if their registered guest fails to fully
+                    attend and participate in the student activity for any reason     
+                    </Text>
+              </Collapse>
+              </>
+            )}
             
             {/*Emergency Contact Information - Section 7 */}  
             <FormLabel  style={{ color: 'blue' }}>7. EMERGENCY CONTACT INFORMATION</FormLabel>
@@ -420,7 +449,7 @@ export default function Forms() {
               </FormControl>
               <FormControl flex={3} isRequired>
                 <FormLabel htmlFor="emergencyContactAdress">Emergency Contact Address (Include street, city and state)</FormLabel>
-                <Input id="emergencyContactAdress" name="emergencyContactAdress" onChange={handleInputChange} />
+                <Input id="emergencyContactAdress" name="emergencyContactAddress" onChange={handleInputChange} />
               </FormControl>
             </HStack>
     
