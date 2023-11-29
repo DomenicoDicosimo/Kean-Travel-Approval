@@ -10,9 +10,11 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     CORS(app)
+
     db.init_app(app)
     app.register_blueprint(main)
-
+    
+ 
     # with app.app_context():
     #     db.create_all()  # Create tables if they don't exist
 
