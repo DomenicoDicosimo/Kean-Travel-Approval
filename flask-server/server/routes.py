@@ -3,9 +3,11 @@ This module contains the routes for the Flask server.
 """
 
 from flask import Blueprint, jsonify, request
+from datetime import datetime
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import db
-from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm,TravelEthicsForm
+from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm,TravelEthicsForm, Expenses
 
 main = Blueprint("main", __name__)
 
@@ -201,7 +203,48 @@ def submit_travel_ethics_form():
     db.session.add(Travel_Ethics_Form)
     db.session.commit()
 
-    return jsonify({'message': 'Form submitted successfully'})
+    return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
+
+
+@main.route('/submit_expenses', methods=['POST'])
+def submit_expenses():
+    data = request.json
+
+    # Validate FormID
+    form_id = data.get('FormID')
+    if not form_id:
+        return jsonify({'error': 'FormID is required'}), 400
+    form = TravelEthicsForm.query.get(form_id)
+    if not form:
+        return jsonify({'error': 'TravelEthicsForm with the given FormID does not exist'}), 404
+
+    # Validate and extract other fields
+    try:
+        expense_date = datetime.strptime(data.get('ExpenseDate'), "%Y-%m-%d")
+        description = data.get('Description')
+        amount = float(data.get('Amount'))
+
+        if not description:
+            return jsonify({'error': 'Description is required'}), 400
+        if amount <= 0:
+            return jsonify({'error': 'Amount must be greater than 0'}), 400
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Invalid data format'}), 400
+
+    # Create and save the expense
+    try:
+        new_expense = Expenses(
+            FormID=form_id,
+            ExpenseDate=expense_date,
+            Description=description,
+            Amount=amount
+        )
+        db.session.add(new_expense)
+        db.session.commit()
+        return jsonify({'message': 'Expense submitted successfully', 'ItemID': new_expense.ItemID})
+    except SQLAlchemyError as e:
+        # Log the exception here
+        return jsonify({'error': 'Database error'}), 500
 
 
 

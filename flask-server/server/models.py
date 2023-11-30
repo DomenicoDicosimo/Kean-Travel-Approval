@@ -364,3 +364,29 @@ class TravelAuthorizationRequestForm(db.Model):
 
     def __repr__(self):
         return f"<TravelAuthorizationRequestForm(id={self.id}, name='{self.name}', address='{self.address}', city='{self.city}', state='{self.state}', zip='{self.zip}', kean_id='{self.kean_id}', title='{self.title}', location='{self.location}', email='{self.email}', ext='{self.ext}', departure_time={self.departure_time}, return_date={self.return_date}, destination='{self.destination}', conference_name='{self.conference_name}')>"
+    
+
+
+
+class FormApproval(db.Model):
+    __tablename__ = 'FormApproval'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    form_id = db.Column(db.Integer, nullable=False)
+    approval_route_id = db.Column(db.Integer, db.ForeignKey('ApprovalRoute.RouteID'), nullable=False)
+    approval_status_id = db.Column(db.Integer, db.ForeignKey('ApprovalStatus.StatusID'), nullable=False)
+    approver_id = db.Column(db.Integer, db.ForeignKey('Approver.ApproverID'), nullable=False)
+    approval_date = db.Column(db.Date)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "form_id": self.form_id,
+            "approval_route_id": self.approval_route_id,
+            "approval_status_id": self.approval_status_id,
+            "approver_id": self.approver_id,
+            "approval_date": self.approval_date,
+        }
+
+    def __repr__(self):
+        return f"<FormApproval {self.id}>"
