@@ -372,7 +372,21 @@ class FormApproval(db.Model):
     __tablename__ = 'FormApproval'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    form_id = db.Column(db.Integer, db.ForeignKey('TravelEthicsForm.id'), nullable=False)
-    approval_level_id = db.Column(db.Integer, db.ForeignKey('ApprovalLevel.id'), nullable=False)
-    approver_id = db.Column(db.Integer, db.ForeignKey('Approver.id'), nullable=False)
+    form_id = db.Column(db.Integer, nullable=False)
+    approval_route_id = db.Column(db.Integer, db.ForeignKey('ApprovalRoute.RouteID'), nullable=False)
+    approval_status_id = db.Column(db.Integer, db.ForeignKey('ApprovalStatus.StatusID'), nullable=False)
+    approver_id = db.Column(db.Integer, db.ForeignKey('Approver.ApproverID'), nullable=False)
     approval_date = db.Column(db.Date)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "form_id": self.form_id,
+            "approval_route_id": self.approval_route_id,
+            "approval_status_id": self.approval_status_id,
+            "approver_id": self.approver_id,
+            "approval_date": self.approval_date,
+        }
+
+    def __repr__(self):
+        return f"<FormApproval {self.id}>"
