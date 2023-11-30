@@ -11,7 +11,7 @@ import {
   HStack
 } from "@chakra-ui/react";
 
-export default function Forms() {
+export default function TravelAuthorizationRequestForm() {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -36,7 +36,7 @@ export default function Forms() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:5000/travel-authorization-reuqest-form', {
+    const response = await fetch('http://localhost:5000/submit-travel-authorization-request-form', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,3 +137,4 @@ export default function Forms() {
     </>
   );
 }
+
