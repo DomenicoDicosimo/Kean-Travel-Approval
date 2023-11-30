@@ -364,3 +364,15 @@ class TravelAuthorizationRequestForm(db.Model):
 
     def __repr__(self):
         return f"<TravelAuthorizationRequestForm(id={self.id}, name='{self.name}', address='{self.address}', city='{self.city}', state='{self.state}', zip='{self.zip}', kean_id='{self.kean_id}', title='{self.title}', location='{self.location}', email='{self.email}', ext='{self.ext}', departure_time={self.departure_time}, return_date={self.return_date}, destination='{self.destination}', conference_name='{self.conference_name}')>"
+    
+
+
+
+class FormApproval(db.Model):
+    __tablename__ = 'FormApproval'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    form_id = db.Column(db.Integer, db.ForeignKey('TravelEthicsForm.id'), nullable=False)
+    approval_level_id = db.Column(db.Integer, db.ForeignKey('ApprovalLevel.id'), nullable=False)
+    approver_id = db.Column(db.Integer, db.ForeignKey('Approver.id'), nullable=False)
+    approval_date = db.Column(db.Date)
