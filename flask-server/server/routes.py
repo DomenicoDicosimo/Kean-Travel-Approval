@@ -170,7 +170,7 @@ def get_user_submitted_forms():
 @main.route("/get-user-submitted-forms/<int:form_id>", methods=["GET"])
 def get_user_submitted_form(form_id):
     """
-    Returns a JSON representation of a specific form for the associated user in the database
+    Example call: http://127.0.0.1:5000/get-user-submitted-forms/form_id?email=user@example.com
     """
     target_email = request.args.get("email")
     form = (
