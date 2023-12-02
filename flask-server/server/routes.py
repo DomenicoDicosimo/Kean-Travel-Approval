@@ -167,6 +167,25 @@ def get_user_submitted_forms():
     return jsonify([{"form": form.to_dict(), "role": role} for form, role in forms])
 
 
+@main.route("/get-user-submitted-forms/<int:form_id>", methods=["GET"])
+def get_user_submitted_form(form_id):
+    """
+    Returns a JSON representation of a specific form for the associated user in the database
+    """
+    target_email = request.args.get("email")
+    form = (
+        db.session.query(StudentTravelRegistrationFormDay, User.role)
+        .join(User, StudentTravelRegistrationFormDay.email == User.email)
+        .filter(StudentTravelRegistrationFormDay.email == target_email)
+        .filter(StudentTravelRegistrationFormDay.id == form_id)
+        .first()
+    )
+    if form is None:
+        return jsonify({"error": "Form not found"}), 404
+    else:
+        return jsonify({"form": form[0].to_dict(), "role": form[1]})
+
+
 @main.route("/student-travel-registration-form-day")
 def get_all_student_forms():
     """
