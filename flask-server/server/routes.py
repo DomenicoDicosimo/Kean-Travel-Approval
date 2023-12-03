@@ -167,6 +167,25 @@ def get_user_submitted_forms():
     return jsonify([{"form": form.to_dict(), "role": role} for form, role in forms])
 
 
+@main.route("/get-user-submitted-forms/<int:form_id>", methods=["GET"])
+def get_user_submitted_form(form_id):
+    """
+    Example call: http://127.0.0.1:5000/get-user-submitted-forms/form_id?email=user@example.com
+    """
+    target_email = request.args.get("email")
+    form = (
+        db.session.query(StudentTravelRegistrationFormDay, User.role)
+        .join(User, StudentTravelRegistrationFormDay.email == User.email)
+        .filter(StudentTravelRegistrationFormDay.email == target_email)
+        .filter(StudentTravelRegistrationFormDay.id == form_id)
+        .first()
+    )
+    if form is None:
+        return jsonify({"error": "Form not found"}), 404
+    else:
+        return jsonify({"form": form[0].to_dict(), "role": form[1]})
+
+
 @main.route("/student-travel-registration-form-day")
 def get_all_student_forms():
     """
@@ -177,43 +196,12 @@ def get_all_student_forms():
     return jsonify([f.to_dict() for f in forms])
 
 
-@main.route("/submit-travel-authorization-request-form", methods=["POST"])
-def submit_student_travel_authorization_request_form():
-    data = request.json
-    travel_authorization_request_form = TravelAuthorizationRequestForm(
-        name=data.get("name"),
-        address=data.get("address"),
-        city=data.get("city"),
-        state=data.get("state"),
-        zip=data.get("zip"),
-        kean_id=data.get("kean_id"),
-        title=data.get("title"),
-        location=data.get("location"),
-        email=data.get("email"),
-        ext=data.get("ext"),
-        departure_time=data.get("departure_time"),
-        return_date=data.get("return_date"),
-        destination=data.get("destination"),
-        conference_name=data.get("conference_name"),
-    )
-
-    if TravelAuthorizationRequestForm.query.filter_by(email=data["email"]).first():
-        return (
-            jsonify({"message": "User already submitted form. Wait for approval."}),
-            200,
-        )
-
-    db.session.add(travel_authorization_request_form)
-    db.session.commit()
-
-    return jsonify({"message": "Form submitted successfully"}), 200
-
-
 @main.route("/submit-student-travel-registration-form-day", methods=["POST"])
 def submit_student_travel_registration_form_day():
     data = request.json
     student_registration_day = StudentTravelRegistrationFormDay(
         event_name=data.get("event_name"),
+        event_date=data.get("event_date"),
         host_organization=data.get("host_organization"),
         departure_time=data.get("departure_time"),
         approximate_return_time=data.get("approximate_return_time"),
@@ -326,6 +314,38 @@ def submit_student_travel_registration_form_day():
         jsonify({"message": "Form submitted and email sent to the next person."}),
         200,
     )
+
+
+@main.route("/submit-travel-authorization-request-form", methods=["POST"])
+def submit_student_travel_authorization_request_form():
+    data = request.json
+    travel_authorization_request_form = TravelAuthorizationRequestForm(
+        name=data.get("name"),
+        address=data.get("address"),
+        city=data.get("city"),
+        state=data.get("state"),
+        zip=data.get("zip"),
+        kean_id=data.get("kean_id"),
+        title=data.get("title"),
+        location=data.get("location"),
+        email=data.get("email"),
+        ext=data.get("ext"),
+        departure_time=data.get("departure_time"),
+        return_date=data.get("return_date"),
+        destination=data.get("destination"),
+        conference_name=data.get("conference_name"),
+    )
+
+    if TravelAuthorizationRequestForm.query.filter_by(email=data["email"]).first():
+        return (
+            jsonify({"message": "User already submitted form. Wait for approval."}),
+            200,
+        )
+
+    db.session.add(travel_authorization_request_form)
+    db.session.commit()
+
+    return jsonify({"message": "Form submitted successfully"}), 200
 
 
 @main.route("/travel_ethics_form")
