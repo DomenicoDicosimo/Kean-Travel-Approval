@@ -13,6 +13,8 @@ import {
   Text,
   Button,
   Checkbox,
+  Radio,
+  RadioGroup,
 } from '@chakra-ui/react';
 export default function DisplayStudentTravelRegistrationFormDay({ formId, userEmail }) {
   const [formData, setFormData] = useState(null);
@@ -211,6 +213,86 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
               I agree to the Participant Conduct Agreement
             </Checkbox>
           </FormControl>
+
+          {/* Transportation- section 4 */}
+          <FormLabel style={{ color: 'blue' }}>
+            4. ARE YOU UTILIZING THE KEAN UNIVERSITY PROVIDED TRANSPORTATION AS A PART OF THE
+            EVENT/ACTIVITY?
+          </FormLabel>
+          <FormControl>
+            <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
+            <RadioGroup>
+              <Stack direction="row">
+                <Radio value="yes" isReadOnly>
+                  Yes
+                </Radio>
+                <Radio value="no" isReadOnly>
+                  No
+                </Radio>
+              </Stack>
+            </RadioGroup>
+          </FormControl>
+          <FormControl display="flex" alignItems="center">
+            <Checkbox
+              name="transportationWaiver"
+              isChecked={formData.form.transportationWaiver}
+              isReadOnly
+            >
+              I agree to the Transportation Waiver
+            </Checkbox>
+          </FormControl>
+
+          {/* FERPA - Section 5 */}
+          <FormControl>
+            <FormLabel style={{ color: 'blue' }}>
+              5. FERPA (FAMILY EDUCATIONAL RIGHTS AND PRIVACY ACT) INFORMATION RELEASE
+            </FormLabel>
+            <Checkbox defaultChecked={formData.form.agree_to_ferpa} isReadOnly>
+              I agree to the FERPA Information Release
+            </Checkbox>
+          </FormControl>
+
+          {/* Student Financial Obligation - Section 6 */}
+          <FormLabel style={{ color: 'blue' }}>
+            6. STUDENT FINANCIAL OBLIGATION ACKNOWLEDGEMENT
+          </FormLabel>
+          <FormControl>
+            <FormLabel>Financial Obligation</FormLabel>
+            <RadioGroup>
+              <Stack direction="row">
+                <Radio isReadOnly>Not Applicable</Radio>
+                <Radio isReadOnly>
+                  Required: Complete Studdent Financial Obligation Acknowledgement Below.
+                </Radio>
+              </Stack>
+            </RadioGroup>
+          </FormControl>
+
+          {
+            <>
+              <HStack>
+                <FormControl>
+                  <FormLabel>Paid Ticket Price</FormLabel>
+                  <Text>${formData.form.paid_ticket_price}</Text>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Other Activity Costs</FormLabel>
+                  <Text>${formData.form.other_activity_costs}</Text>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>Total Financial Obligation</FormLabel>
+                  <Text>${formData.form.total_financial_obligation}</Text>
+                </FormControl>
+              </HStack>
+
+              <FormControl>
+                <Checkbox isReadOnly defaultChecked={formData.form.financial_obligation}>
+                  I acknowledge the Financial Obligation
+                </Checkbox>
+              </FormControl>
+            </>
+          }
         </Stack>
       </Box>
     </>
