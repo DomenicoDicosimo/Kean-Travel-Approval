@@ -14,7 +14,6 @@ import {
   Button,
   Checkbox,
 } from '@chakra-ui/react';
-import { CheckIcon, NotAllowedIcon, CheckCircleIcon, CloseIcon } from '@chakra-ui/icons';
 export default function DisplayStudentTravelRegistrationFormDay({ formId, userEmail }) {
   const [formData, setFormData] = useState(null);
 
@@ -141,10 +140,9 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
             2. RELEASE AND INDEMNIFICATION AGREEMENT FOR STUDENT TRAVEL
           </FormLabel>
           <FormControl display="flex" alignItems="center">
-            <Text>
-              I agree to the Release and Indemnification Agreement:{' '}
-              {formData.form.agree_to_release ? 'YES' : 'NO'}
-            </Text>
+            <Checkbox defaultChecked={formData.form.agree_to_release} isReadOnly>
+              I agree to the Release and Indemnification Agreement
+            </Checkbox>
           </FormControl>
 
           {/* Parent/Guardian Information for Underage Participants - Part of Section 2*/}
@@ -180,10 +178,9 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
           {/* Participant Conduct Agreement - Section 3 */}
           <FormLabel style={{ color: 'blue' }}>3. PARTICIPANT CONDUCT AGREEMENT</FormLabel>
           <FormControl>
-            <Text>
-              I agree to the Participant Conduct Agreement:{' '}
-              {formData.form.agree_to_conduct ? 'YES' : 'NO'}
-            </Text>
+            <Checkbox defaultChecked={formData.form.agree_to_conduct} isReadOnly>
+              I agree to the Participant Conduct Agreement
+            </Checkbox>
           </FormControl>
         </Stack>
       </Box>
