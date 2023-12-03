@@ -308,6 +308,7 @@ class StudentTravelRegistrationFormDay(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String(255))
+    event_date = db.Column(db.Date)
     host_organization = db.Column(db.String(255))
     departure_time = db.Column(db.DateTime)
     approximate_return_time = db.Column(db.DateTime)
@@ -346,6 +347,7 @@ class StudentTravelRegistrationFormDay(db.Model):
         return {
             "id": self.id,
             "event_name": self.event_name,
+            "event_date": str(self.event_date),
             "host_organization": self.host_organization,
             "departure_time": str(self.departure_time),
             "approximate_return_time": str(self.approximate_return_time),

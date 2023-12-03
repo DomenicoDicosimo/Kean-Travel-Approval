@@ -41,6 +41,34 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
   }
   const age = calculateAge(formData.form.date_of_birth);
 
+  function formatDate(date) {
+    const dateObj = new Date(date);
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
+
+  function formatDateTime(dateTime) {
+    const timeObj = new Date(dateTime);
+    let hours = timeObj.getHours().toString().padStart(2, '0');
+    let minutes = timeObj.getMinutes().toString().padStart(2, '0');
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${formatDate(dateTime)} ${hours}:${minutes} ${ampm}`;
+  }
+
+  function formatPhoneNumber(phoneNumber) {
+    var cleaned = ('' + phoneNumber).replace(/\D/g, '');
+    var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+    }
+    return null;
+  }
+
   return (
     <>
       <NavBar />
@@ -57,8 +85,8 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
 
             <FormControl flex="1">
               {/* Decreased flex value for less space */}
-              <FormLabel htmlFor="date">Date</FormLabel>
-              <Text>{formData.form.date}</Text>
+              <FormLabel htmlFor="event_date">Event Date</FormLabel>
+              <Text>{formatDate(formData.form.event_date)}</Text>
             </FormControl>
           </HStack>
 
@@ -72,11 +100,12 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
           <HStack spacing={4}>
             <FormControl>
               <FormLabel htmlFor="departure_time">Departure Time</FormLabel>
-              <Text>{formData.form.departure_time}</Text>
+              {/* <Text>{formData.form.departure_time}</Text> */}
+              <Text>{formatDateTime(formData.form.departure_time)}</Text>
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
-              <Text>{formData.form.approximate_return_time}</Text>
+              <Text>{formatDateTime(formData.form.approximate_return_time)}</Text>
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="minimum_age_requirement">Minimum Age Requirement</FormLabel>
@@ -109,11 +138,11 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="phone_number">Phone Number</FormLabel>
-              <Text>{formData.form.phone_number}</Text>
+              <Text>{formatPhoneNumber(formData.form.phone_number)}</Text>
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="date_of_birth">Date of Birth</FormLabel>
-              <Text>{formData.form.date_of_birth}</Text>
+              <Text>{formatDate(formData.form.date_of_birth)}</Text>
             </FormControl>
           </HStack>
           <HStack spacing={4}>
@@ -162,7 +191,7 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
 
                 <FormControl>
                   <FormLabel htmlFor="parent_signature_date">Date</FormLabel>
-                  <Text>{formData.form.parent_signature_date}</Text>
+                  <Text>{formatDate(formData.form.parent_signature_date)}</Text>
                 </FormControl>
               </HStack>
 
@@ -170,7 +199,7 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
                 <FormLabel htmlFor="parent_contact_number">
                   Parent/Guardian's Contact Number
                 </FormLabel>
-                <Text>{formData.form.parent_contact_number}</Text>
+                <Text>{formatPhoneNumber(formData.form.parent_contact_number)}</Text>
               </FormControl>
             </Box>
           )}
