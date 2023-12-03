@@ -5,18 +5,18 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
-#To store the receipt 
+# To store the receipt
 class Receipt(db.Model):
     __tablename__ = "receipts"
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(50), db.ForeignKey('Users.id'))
+    user_id = db.Column(db.String(50), db.ForeignKey("Users.id"))
     file_path = db.Column(db.String(255), nullable=False)
     upload_date = db.Column(db.Date, nullable=False)
-    
+
     def __repr__(self):
-        return f'<Receipt {self.id} - User {self.user_id}>'
-    
+        return f"<Receipt {self.id} - User {self.user_id}>"
+
 
 class User(db.Model):
     __tablename__ = "Users"
@@ -55,7 +55,7 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.fName} {self.lName}>"
 
-    
+
 class ApprovalLevel(db.Model):
     __tablename__ = "ApprovalLevels"
 
@@ -70,7 +70,7 @@ class ApprovalLevel(db.Model):
 
     def __repr__(self):
         return f"<ApprovalLevel {self.LevelName}>"
-    
+
 
 class ApprovalRoute(db.Model):
     __tablename__ = "ApprovalRoute"
@@ -78,7 +78,9 @@ class ApprovalRoute(db.Model):
     RouteID = db.Column(db.Integer, primary_key=True)
     FundingSource = db.Column(db.String(50), nullable=False)
     ApprovalOrder = db.Column(db.Integer, nullable=False)
-    LevelID = db.Column(db.Integer, db.ForeignKey('ApprovalLevel.LevelID'), nullable=False)
+    LevelID = db.Column(
+        db.Integer, db.ForeignKey("ApprovalLevel.LevelID"), nullable=False
+    )
 
     def to_dict(self):
         return {
@@ -112,8 +114,10 @@ class Approver(db.Model):
     __tablename__ = "Approver"
 
     ApproverID = db.Column(db.Integer, primary_key=True)
-    UserID = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
-    LevelID = db.Column(db.Integer, db.ForeignKey('ApprovalLevel.LevelID'), nullable=False)
+    UserID = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable=False)
+    LevelID = db.Column(
+        db.Integer, db.ForeignKey("ApprovalLevel.LevelID"), nullable=False
+    )
 
     def to_dict(self):
         return {
@@ -125,11 +129,14 @@ class Approver(db.Model):
     def __repr__(self):
         return f"<Approver {self.ApproverID}>"
 
+
 class Expenses(db.Model):
     __tablename__ = "Expenses"
 
     ItemID = db.Column(db.Integer, primary_key=True)
-    FormID = db.Column(db.Integer, db.ForeignKey('TravelEthicsForm.FormID'), nullable=False)
+    FormID = db.Column(
+        db.Integer, db.ForeignKey("TravelEthicsForm.FormID"), nullable=False
+    )
     ExpenseDate = db.Column(db.Date, nullable=False)
     Description = db.Column(db.String(255), nullable=False)
     Amount = db.Column(db.Float, nullable=False)
@@ -153,7 +160,7 @@ class TravelEthicsForm(db.Model):
     __tablename__ = "TravelEthicsForm"
 
     FormID = db.Column(db.Integer, primary_key=True)
-    UserID = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
+    UserID = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable=False)
     SubmissionDate = db.Column(db.Date, nullable=False)
     FormType = db.Column(db.String(50), nullable=False)
     FundingSource = db.Column(db.String(50), nullable=False)
@@ -211,7 +218,9 @@ class TravelEthicsForm(db.Model):
     OtherPayerName = db.Column(db.String(255), nullable=False)
     ReasonForAttendance = db.Column(db.Text, nullable=False)
     SponsorOffersHonorarium = db.Column(db.Boolean, nullable=False)
-    StatusID = db.Column(db.Integer, db.ForeignKey('ApprovalStatus.StatusID'), nullable=False)
+    StatusID = db.Column(
+        db.Integer, db.ForeignKey("ApprovalStatus.StatusID"), nullable=False
+    )
 
     def to_dict(self):
         return {
@@ -292,8 +301,8 @@ class TravelEthicsForm(db.Model):
 
 
 class StudentTravelRegistrationFormDay(db.Model):
-    #The Test table has the complete records from the day trip form
-    #If you want you can keep the old form, comment out the other table and delete the new fields
+    # The Test table has the complete records from the day trip form
+    # If you want you can keep the old form, comment out the other table and delete the new fields
     # __tablename__ = "student_travel_registration_form_day"
     __tablename__ = "Test"
 
@@ -313,8 +322,8 @@ class StudentTravelRegistrationFormDay(db.Model):
     city = db.Column(db.String(255))
     state = db.Column(db.String(2))
     zip = db.Column(db.String(10))
-    
-    #New fields
+
+    # New fields
     parent_name = db.Column(db.String(100))
     parent_signature = db.Column(db.String(100))
     parent_signature_date = db.Column(db.Date)
@@ -332,7 +341,7 @@ class StudentTravelRegistrationFormDay(db.Model):
     agree_to_ferpa = db.Column(db.Boolean, default=False)
     financial_obligation = db.Column(db.Boolean, default=False)
     participant_certification = db.Column(db.Boolean, default=False)
-    
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -351,11 +360,28 @@ class StudentTravelRegistrationFormDay(db.Model):
             "city": self.city,
             "state": self.state,
             "zip": self.zip,
-            
+            "parent_name": self.parent_name,
+            "parent_signature": self.parent_signature,
+            "parent_signature_date": str(self.parent_signature_date),
+            "parent_contact_number": self.parent_contact_number,
+            "paid_ticket_price": self.paid_ticket_price,
+            "other_activity_costs": self.other_activity_costs,
+            "total_financial_obligation": self.total_financial_obligation,
+            "emergency_contact_name": self.emergency_contact_name,
+            "relation_to_participant": self.relation_to_participant,
+            "emergency_contact_phone": self.emergency_contact_phone,
+            "emergency_contact_address": self.emergency_contact_address,
+            "agree_to_release": self.agree_to_release,
+            "agree_to_conduct": self.agree_to_conduct,
+            "transportation_waiver": self.transportation_waiver,
+            "agree_to_ferpa": self.agree_to_ferpa,
+            "financial_obligation": self.financial_obligation,
+            "participant_certification": self.participant_certification,
         }
 
     def __repr__(self):
         return f"<StudentTravelRegistrationFormDay(id={self.id}, event_name='{self.event_name}', host_organization='{self.host_organization}', departure_time={self.departure_time}, approximate_return_time={self.approximate_return_time})>"
+
 
 class TravelAuthorizationRequestForm(db.Model):
     __tablename__ = "travel_authorization_request_form"
@@ -396,19 +422,23 @@ class TravelAuthorizationRequestForm(db.Model):
         }
 
     def __repr__(self):
-
         return f"<TravelAuthorizationRequestForm(id={self.id}, name='{self.name}', address='{self.address}', city='{self.city}', state='{self.state}', zip='{self.zip}', kean_id='{self.kean_id}', title='{self.title}', location='{self.location}', email='{self.email}', ext='{self.ext}', departure_time={self.departure_time}, return_date={self.return_date}, destination='{self.destination}', conference_name='{self.conference_name}')>"
 
 
-
 class FormApproval(db.Model):
-    __tablename__ = 'FormApproval'
+    __tablename__ = "FormApproval"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     form_id = db.Column(db.Integer, nullable=False)
-    approval_route_id = db.Column(db.Integer, db.ForeignKey('ApprovalRoute.RouteID'), nullable=False)
-    approval_status_id = db.Column(db.Integer, db.ForeignKey('ApprovalStatus.StatusID'), nullable=False)
-    approver_id = db.Column(db.Integer, db.ForeignKey('Approver.ApproverID'), nullable=False)
+    approval_route_id = db.Column(
+        db.Integer, db.ForeignKey("ApprovalRoute.RouteID"), nullable=False
+    )
+    approval_status_id = db.Column(
+        db.Integer, db.ForeignKey("ApprovalStatus.StatusID"), nullable=False
+    )
+    approver_id = db.Column(
+        db.Integer, db.ForeignKey("Approver.ApproverID"), nullable=False
+    )
     approval_date = db.Column(db.Date)
 
     def to_dict(self):
