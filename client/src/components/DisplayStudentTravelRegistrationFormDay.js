@@ -1,26 +1,36 @@
-/* eslint-disable  */
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import NavBar from './NavBar';
 import axios from 'axios';
+// import { useUser } from '@clerk/clerk-react';
 import {
   Box,
   FormControl,
   FormLabel,
-  Flex,
   Stack,
   HStack,
-  Collapse,
   Text,
-  Button,
   Checkbox,
   Radio,
   RadioGroup,
 } from '@chakra-ui/react';
-export default function DisplayStudentTravelRegistrationFormDay({ formId, userEmail }) {
+export default function DisplayStudentTravelRegistrationFormDay({
+  userEmail,
+  formId,
+  usingUniversityTransport,
+  isUnderage,
+}) {
   const [formData, setFormData] = useState(null);
+  // const { user } = useUser();
+  // const userEmail = user?.emailAddresses[0]?.emailAddress;
+  DisplayStudentTravelRegistrationFormDay.propTypes = {
+    formId: PropTypes.string,
+  };
 
   useEffect(() => {
     const url = `http://127.0.0.1:5000/get-user-submitted-forms/${formId}?email=${userEmail}`;
+    console.log(url);
     axios
       .get(url)
       .then((res) => setFormData(res.data))
@@ -177,7 +187,7 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
           </FormControl>
 
           {/* Parent/Guardian Information for Underage Participants - Part of Section 2*/}
-          {age < 18 && (
+          {isUnderage && (
             <Box>
               <Text>Parent/Guardians Information (Required for participants under 18)</Text>
               <HStack>
@@ -199,7 +209,7 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
 
               <FormControl>
                 <FormLabel htmlFor="parent_contact_number">
-                  Parent/Guardian's Contact Number
+                  Parent/Guardian Contact Number
                 </FormLabel>
                 <Text>{formatPhoneNumber(formData.form.parent_contact_number)}</Text>
               </FormControl>
@@ -221,7 +231,7 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
           </FormLabel>
           <FormControl>
             <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
-            <RadioGroup>
+            <RadioGroup defaultValue={usingUniversityTransport ? 'yes' : 'no'}>
               <Stack direction="row">
                 <Radio value="yes" isReadOnly>
                   Yes
@@ -232,15 +242,18 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
               </Stack>
             </RadioGroup>
           </FormControl>
-          <FormControl display="flex" alignItems="center">
-            <Checkbox
-              name="transportationWaiver"
-              isChecked={formData.form.transportationWaiver}
-              isReadOnly
-            >
-              I agree to the Transportation Waiver
-            </Checkbox>
-          </FormControl>
+
+          {!usingUniversityTransport && (
+            <FormControl display="flex" alignItems="center">
+              <Checkbox
+                name="transportationWaiver"
+                isChecked={formData.form.transportationWaiver}
+                isReadOnly
+              >
+                I agree to the Transportation Waiver
+              </Checkbox>
+            </FormControl>
+          )}
 
           {/* FERPA - Section 5 */}
           <FormControl>
