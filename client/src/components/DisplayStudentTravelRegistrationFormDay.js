@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import NavBar from './NavBar';
@@ -25,7 +24,10 @@ export default function DisplayStudentTravelRegistrationFormDay({
   // const { user } = useUser();
   // const userEmail = user?.emailAddresses[0]?.emailAddress;
   DisplayStudentTravelRegistrationFormDay.propTypes = {
+    userEmail: PropTypes.string,
     formId: PropTypes.string,
+    usingUniversityTransport: PropTypes.bool,
+    isUnderage: PropTypes.bool,
   };
 
   useEffect(() => {
@@ -41,17 +43,17 @@ export default function DisplayStudentTravelRegistrationFormDay({
     return <div>Loading...</div>;
   }
 
-  function calculateAge(date_of_birth) {
-    const dob = new Date(date_of_birth);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const numMonths = today.getMonth() - dob.getMonth();
-    if (numMonths < 0 || (numMonths === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-    return age;
-  }
-  const age = calculateAge(formData.form.date_of_birth);
+  // function calculateAge(date_of_birth) {
+  //   const dob = new Date(date_of_birth);
+  //   const today = new Date();
+  //   let age = today.getFullYear() - dob.getFullYear();
+  //   const numMonths = today.getMonth() - dob.getMonth();
+  //   if (numMonths < 0 || (numMonths === 0 && today.getDate() < dob.getDate())) {
+  //     age--;
+  //   }
+  //   return age;
+  // }
+  // const age = calculateAge(formData.form.date_of_birth);
 
   function formatDate(date) {
     const dateObj = new Date(date);
@@ -271,17 +273,19 @@ export default function DisplayStudentTravelRegistrationFormDay({
           </FormLabel>
           <FormControl>
             <FormLabel>Financial Obligation</FormLabel>
-            <RadioGroup>
+            <RadioGroup defaultValue={formData.form.financial_obligation ? 'yes' : 'no'}>
               <Stack direction="row">
-                <Radio isReadOnly>Not Applicable</Radio>
-                <Radio isReadOnly>
+                <Radio isReadOnly value="no">
+                  Not Applicable
+                </Radio>
+                <Radio isReadOnly value="yes">
                   Required: Complete Studdent Financial Obligation Acknowledgement Below.
                 </Radio>
               </Stack>
             </RadioGroup>
           </FormControl>
 
-          {
+          {formData.form.financial_obligation && (
             <>
               <HStack>
                 <FormControl>
@@ -305,7 +309,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
                 </Checkbox>
               </FormControl>
             </>
-          }
+          )}
 
           {/*Emergency Contact Information - Section 7 */}
           <FormLabel style={{ color: 'blue' }}>7. EMERGENCY CONTACT INFORMATION</FormLabel>
