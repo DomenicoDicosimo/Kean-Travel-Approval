@@ -293,6 +293,47 @@ export default function DisplayStudentTravelRegistrationFormDay({ formId, userEm
               </FormControl>
             </>
           }
+
+          {/*Emergency Contact Information - Section 7 */}
+          <FormLabel style={{ color: 'blue' }}>7. EMERGENCY CONTACT INFORMATION</FormLabel>
+          <FormLabel>
+            {' '}
+            In the event of an emergency, please write the name and contact information for the
+            person that you would like us to contact for you.
+          </FormLabel>
+
+          <HStack>
+            <FormControl isRequired>
+              <FormLabel htmlFor="emergencyContactName">Emergency Contact Name</FormLabel>
+              <Text>{formData.form.emergency_contact_name}</Text>
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel htmlFor="relationToParticipant">Relationship to Participant</FormLabel>
+              <Text>{formData.form.relation_to_participant}</Text>
+            </FormControl>
+          </HStack>
+          <HStack spacing={4}>
+            <FormControl flex={1} isRequired>
+              <FormLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FormLabel>
+              <Text>{formatPhoneNumber(formData.form.emergency_contact_phone)}</Text>
+            </FormControl>
+            <FormControl flex={3} isRequired>
+              <FormLabel htmlFor="emergencyContactAdress">
+                Emergency Contact Address (Include street, city and state)
+              </FormLabel>
+              <Text>{formData.form.emergency_contact_address}</Text>
+            </FormControl>
+          </HStack>
+
+          {/* Participant certification - Section 8 */}
+          <FormLabel style={{ color: 'blue' }}>8. PARTICIPANT CERTIFICATION</FormLabel>
+          <Checkbox
+            name="participantCertification"
+            defaultChecked={formData.form.participant_certification}
+            isReadOnly
+          >
+            I certify that the provided information is accurate
+          </Checkbox>
         </Stack>
       </Box>
     </>
