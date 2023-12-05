@@ -13,6 +13,7 @@ import {
   Checkbox,
   Radio,
   RadioGroup,
+  Input,
 } from '@chakra-ui/react';
 export default function DisplayStudentTravelRegistrationFormDay({
   userEmail,
@@ -94,36 +95,35 @@ export default function DisplayStudentTravelRegistrationFormDay({
           <HStack>
             <FormControl flex="3">
               <FormLabel htmlFor="event_name">Event Name</FormLabel>
-              <Text>{formData.form.event_name}</Text>
+              <Input value={formData.form.event_name} isReadOnly />
             </FormControl>
 
             <FormControl flex="1">
               {/* Decreased flex value for less space */}
               <FormLabel htmlFor="event_date">Event Date</FormLabel>
-              <Text>{formatDate(formData.form.event_date)}</Text>
+              <Input value={formatDate(formData.form.event_date)} isReadOnly />
             </FormControl>
           </HStack>
 
           <HStack>
             <FormControl>
               <FormLabel htmlFor="host_organization">Host Organization/Department</FormLabel>
-              <Text>{formData.form.host_organization}</Text>
+              <Input value={formData.form.host_organization} isReadOnly />
             </FormControl>
           </HStack>
 
           <HStack spacing={4}>
             <FormControl>
               <FormLabel htmlFor="departure_time">Departure Time</FormLabel>
-              {/* <Text>{formData.form.departure_time}</Text> */}
-              <Text>{formatDateTime(formData.form.departure_time)}</Text>
+              <Input value={formatDateTime(formData.form.departure_time)} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
-              <Text>{formatDateTime(formData.form.approximate_return_time)}</Text>
+              <Input value={formatDateTime(formData.form.approximate_return_time)} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="minimum_age_requirement">Minimum Age Requirement</FormLabel>
-              <Text>{formData.form.minimum_age_requirement}</Text>
+              <Input value={formData.form.minimum_age_requirement} isReadOnly />
             </FormControl>
           </HStack>
 
@@ -134,47 +134,48 @@ export default function DisplayStudentTravelRegistrationFormDay({
           <HStack spacing={4}>
             <FormControl>
               <FormLabel htmlFor="first_name">First Name</FormLabel>
-              <Text>{formData.form.first_name}</Text>
+              <Input value={formData.form.first_name} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="last_name">Last Name</FormLabel>
-              <Text>{formData.form.last_name}</Text>
+              <Input value={formData.form.last_name} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="kuid">KUID</FormLabel>
-              <Text>{formData.form.kuid}</Text>
+              <Input value={formData.form.kuid} isReadOnly />
             </FormControl>
           </HStack>
           <HStack spacing={4}>
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
-              <Text>{formData.form.email}</Text>
+              <Input value={formData.form.email} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="phone_number">Phone Number</FormLabel>
-              <Text>{formatPhoneNumber(formData.form.phone_number)}</Text>
+              <Input value={formatPhoneNumber(formData.form.phone_number)} isReadOnly />
             </FormControl>
             <FormControl>
+              {/* TODO Look into why my DOB comes in as 01/22 */}
               <FormLabel htmlFor="date_of_birth">Date of Birth</FormLabel>
-              <Text>{formatDate(formData.form.date_of_birth)}</Text>
+              <Input value={formatDate(formData.form.date_of_birth)} isReadOnly />
             </FormControl>
           </HStack>
           <HStack spacing={4}>
             <FormControl>
               <FormLabel htmlFor="current_address">Current Address</FormLabel>
-              <Text>{formData.form.current_address}</Text>
+              <Input value={formData.form.current_address} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="city">City</FormLabel>
-              <Text>{formData.form.city}</Text>
+              <Input value={formData.form.city} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="state">State</FormLabel>
-              <Text>{formData.form.state}</Text>
+              <Input value={formData.form.state} isReadOnly />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="zip">ZIP Code</FormLabel>
-              <Text>{formData.form.zip}</Text>
+              <Input value={formData.form.zip} isReadOnly />
             </FormControl>
           </HStack>
 
@@ -195,17 +196,17 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <HStack>
                 <FormControl>
                   <FormLabel htmlFor="parent_name">Parent/Guardian Name</FormLabel>
-                  <Text>{formData.form.parent_name}</Text>
+                  <Input value={formData.form.parent_name} isReadOnly />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel htmlFor="parent_signature">Parent/Guardian Signature</FormLabel>
-                  <Text>{formData.form.parent_signature}</Text>
+                  <Input value={formData.form.parent_signature} isReadOnly />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel htmlFor="parent_signature_date">Date</FormLabel>
-                  <Text>{formatDate(formData.form.parent_signature_date)}</Text>
+                  <Input value={formatDate(formData.form.parent_signature_date)} isReadOnly />
                 </FormControl>
               </HStack>
 
@@ -213,7 +214,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
                 <FormLabel htmlFor="parent_contact_number">
                   Parent/Guardian Contact Number
                 </FormLabel>
-                <Text>{formatPhoneNumber(formData.form.parent_contact_number)}</Text>
+                <Input value={formatPhoneNumber(formData.form.parent_contact_number)} isReadOnly />
               </FormControl>
             </Box>
           )}
@@ -290,16 +291,16 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <HStack>
                 <FormControl>
                   <FormLabel>Paid Ticket Price</FormLabel>
-                  <Text>${formData.form.paid_ticket_price}</Text>
+                  <Input value={`$${formData.form.paid_ticket_price}`} isReadOnly />
                 </FormControl>
                 <FormControl>
                   <FormLabel>Other Activity Costs</FormLabel>
-                  <Text>${formData.form.other_activity_costs}</Text>
+                  <Input value={`$${formData.form.other_activity_costs}`} isReadOnly />
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>Total Financial Obligation</FormLabel>
-                  <Text>${formData.form.total_financial_obligation}</Text>
+                  <Input value={`$${formData.form.total_financial_obligation}`} isReadOnly />
                 </FormControl>
               </HStack>
 
@@ -322,23 +323,23 @@ export default function DisplayStudentTravelRegistrationFormDay({
           <HStack>
             <FormControl isRequired>
               <FormLabel htmlFor="emergencyContactName">Emergency Contact Name</FormLabel>
-              <Text>{formData.form.emergency_contact_name}</Text>
+              <Input value={formData.form.emergency_contact_name} isReadOnly />
             </FormControl>
             <FormControl isRequired>
               <FormLabel htmlFor="relationToParticipant">Relationship to Participant</FormLabel>
-              <Text>{formData.form.relation_to_participant}</Text>
+              <Input value={formData.form.relation_to_participant} isReadOnly />
             </FormControl>
           </HStack>
           <HStack spacing={4}>
             <FormControl flex={1} isRequired>
               <FormLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FormLabel>
-              <Text>{formatPhoneNumber(formData.form.emergency_contact_phone)}</Text>
+              <Input value={formatPhoneNumber(formData.form.emergency_contact_phone)} isReadOnly />
             </FormControl>
             <FormControl flex={3} isRequired>
               <FormLabel htmlFor="emergencyContactAdress">
                 Emergency Contact Address (Include street, city and state)
               </FormLabel>
-              <Text>{formData.form.emergency_contact_address}</Text>
+              <Input value={formData.form.emergency_contact_address} isReadOnly />
             </FormControl>
           </HStack>
 
