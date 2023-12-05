@@ -106,7 +106,7 @@ export default function StudentTravelRegistrationFormDay() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch(
-      'http://localhost:5000/submit-student-travel-registration-form-day',
+      'http://127.0.0.1:5000/submit-student-travel-registration-form-day',
       {
         method: 'POST',
         headers: {

@@ -155,7 +155,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <Input value={formatPhoneNumber(formData.form.phone_number)} isReadOnly />
             </FormControl>
             <FormControl>
-              {/* TODO Look into why my DOB comes in as 01/22 */}
+              {/* FIXME Look into why my DOB comes in as 01/22 */}
               <FormLabel htmlFor="date_of_birth">Date of Birth</FormLabel>
               <Input value={formatDate(formData.form.date_of_birth)} isReadOnly />
             </FormControl>
@@ -234,6 +234,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
           </FormLabel>
           <FormControl>
             <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
+            {/* FIXME Coming in backwards */}
             <RadioGroup defaultValue={usingUniversityTransport ? 'yes' : 'no'}>
               <Stack direction="row">
                 <Radio value="yes" isReadOnly>
