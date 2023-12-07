@@ -14,6 +14,8 @@ import {
   Text,
   Radio,
   RadioGroup,
+  InputLeftAddon,
+  InputGroup,
 } from '@chakra-ui/react';
 
 export default function StudentTravelRegistrationFormDay() {
@@ -261,14 +263,18 @@ export default function StudentTravelRegistrationFormDay() {
               </FormControl>
               <FormControl isRequired>
                 <FormLabel htmlFor="phone_number">Phone Number</FormLabel>
-                <Input
-                  type="text"
-                  id="phone_number"
-                  name="phone_number"
-                  placeholder="Phone Number"
-                  onChange={handleInputChange}
-                  value={formData.phone_number}
-                />
+                <InputGroup>
+                  <InputLeftAddon>+1</InputLeftAddon>
+                  <Input
+                    type="tel"
+                    id="phone_number"
+                    name="phone_number"
+                    placeholder="123-456-7890"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    onChange={handleInputChange}
+                    value={formData.phone_number}
+                  />
+                </InputGroup>
               </FormControl>
               <FormControl isRequired>
                 <FormLabel htmlFor="date_of_birth">Date of Birth</FormLabel>
@@ -411,11 +417,17 @@ export default function StudentTravelRegistrationFormDay() {
                   <FormLabel htmlFor="parent_contact_number">
                     Parent/Guardian&apos;s Contact Number
                   </FormLabel>
-                  <Input
-                    id="parent_contact_number"
-                    name="parent_contact_number"
-                    onChange={handleInputChange}
-                  />
+                  <InputGroup>
+                    <InputLeftAddon>+1</InputLeftAddon>
+                    <Input
+                      type="tel"
+                      id="parent_contact_number"
+                      name="parent_contact_number"
+                      placeholder="123-456-7890"
+                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      onChange={handleInputChange}
+                    />
+                  </InputGroup>
                 </FormControl>
               </Box>
             )}
@@ -642,11 +654,17 @@ export default function StudentTravelRegistrationFormDay() {
             <HStack spacing={4}>
               <FormControl flex={1} isRequired>
                 <FormLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FormLabel>
-                <Input
-                  id="emergencyContactPhone"
-                  name="emergencyContactPhone"
-                  onChange={handleInputChange}
-                />
+                <InputGroup>
+                  <InputLeftAddon>+1</InputLeftAddon>
+                  <Input
+                    type="tel"
+                    id="emergencyContactPhone"
+                    name="emergencyContactPhone"
+                    placeholder="123-456-7890"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    onChange={handleInputChange}
+                  />
+                </InputGroup>
               </FormControl>
               <FormControl flex={3} isRequired>
                 <FormLabel htmlFor="emergencyContactAdress">
