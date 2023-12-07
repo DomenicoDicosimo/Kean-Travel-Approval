@@ -18,13 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 
 from . import db
-from .models import (
-    Expenses,
-    StudentTravelRegistrationFormDay,
-    TravelAuthorizationRequestForm,
-    TravelEthicsForm,
-    User,
-)
+from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm,TravelEthicsForm, Expenses, ApprovalRoute, FormApproval, Approver
 
 main = Blueprint("main", __name__)
 
@@ -433,9 +427,7 @@ def submit_travel_ethics_form():
     db.session.add(Travel_Ethics_Form)
     db.session.commit()
 
-    return jsonify(
-        {"message": "Form submitted successfully", "FormID": TravelEthicsForm.FormID}
-    )
+    return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
 
 
 @main.route("/submit_expenses", methods=["POST"])
