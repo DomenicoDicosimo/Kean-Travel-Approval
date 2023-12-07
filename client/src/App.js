@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ClerkProvider, SignIn, SignUp, useUser } from '@clerk/clerk-react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
@@ -36,6 +36,8 @@ AuthRedirect.propTypes = {
 };
 
 function App() {
+  const [usingUniversityTransport, setUsingUniversityTransport] = useState('');
+  const [isUnderage, setIsUnderage] = useState(false);
   return (
     <>
       <ClerkProvider publishableKey={clerkPubKey}>
@@ -81,7 +83,13 @@ function App() {
               <Route path="/group-travel/*" element={<GroupTravel />}></Route>
               <Route
                 path="/student-travel-registration-form-day"
-                element={<StudentTravelRegistrationFormDay />}
+                element={
+                  <StudentTravelRegistrationFormDay
+                    usingUniversityTransport={usingUniversityTransport}
+                    setUsingUniversityTransport={setUsingUniversityTransport}
+                    setIsUnderage={setIsUnderage}
+                  />
+                }
               />
               <Route
                 path="/travel-authorization-form"
@@ -91,8 +99,10 @@ function App() {
                 path="/display-student-travel-registration-form-day"
                 element={
                   <DisplayStudentTravelRegistrationFormDay
-                    formId={9}
                     userEmail={'gordonza@kean.edu'}
+                    formId={10}
+                    usingUniversityTransport={usingUniversityTransport}
+                    isUnderage={isUnderage}
                   />
                 }
               />
