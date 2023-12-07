@@ -30,3 +30,6 @@ yarn-error.log*
 .venv
 __pycache__
 .pytest_cache
+
+venv/
+.idea

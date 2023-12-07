@@ -267,7 +267,16 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: 'Forms',
-    href: '/forms',
+    children: [
+      {
+        label: 'Travel Authorization Form',
+        href: '/travel-authorization-form',
+      },
+      {
+        label: 'Student Travel Registration Form',
+        href: '/student-travel-registration-form-day',
+      },
+    ],
   },
   {
     label: 'Group Travel',
