@@ -427,28 +427,6 @@ def submit_travel_ethics_form():
     db.session.add(Travel_Ethics_Form)
     db.session.commit()
 
-    form_id = Travel_Ethics_Form.FormID
-
-    first_approval_route = ApprovalRoute.query.filter_by(
-        FundingSource=data['FundingSource']
-    ).order_by(ApprovalRoute.ApprovalOrder).first()
-
-    if not first_approval_route:
-        return jsonify({'error': 'No approval route found for the given funding source'}), 404
-
-    # Initialize the approval process by creating an entry in the FormApproval table
-    try:
-        initial_approval = FormApproval(
-            form_id = form_id,  # Replace with the actual form ID
-            approval_level_id=first_approval_route.LevelID,
-            approver_id=None,  # As no one has approved it yet
-            approval_date=None  # As it hasn't been approved yet
-        )
-        db.session.add(initial_approval)
-        db.session.commit()
-    except SQLAlchemyError as e:
-        return jsonify({'error': 'Database error'}), 500
-
     return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
 
 
