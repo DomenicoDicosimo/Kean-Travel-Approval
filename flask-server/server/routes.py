@@ -24,6 +24,7 @@ from .models import (
     TravelAuthorizationRequestForm,
     TravelEthicsForm,
     User,
+    Receipt
 )
 
 main = Blueprint("main", __name__)
