@@ -26,7 +26,7 @@ import {
 import {SignedIn, SignedOut, UserButton} from "@clerk/clerk-react";
 
 export default function NavBar() {
-  const { isOpen, onToggle } = useDisclosure()
+  const { isOpen,  onToggle } = useDisclosure()
 
   return (
     <Box position="relative" top="0" w="100%">

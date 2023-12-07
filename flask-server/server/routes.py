@@ -52,9 +52,10 @@ def get_user_submitted_forms():
     Returns a JSON representation of all forms for the associated user in the database
     """
     data = request.get_json()
-    target_email = data['email']
+    target_email = data["email"]
     forms = StudentTravelRegistrationFormDay().query.where(
-        f"student_travel_registration_form_day.email == '{target_email}'")
+        f"student_travel_registration_form_day.email == '{target_email}'"
+    )
     return jsonify([f.to_dict() for f in forms])
 
 
@@ -89,13 +90,19 @@ def submit_student_travel_registration_form_day():
         zip=data.get("zip"),
     )
 
-    if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
-        return jsonify({"message": "User already submitted form. Wait for approval."}), 200
+    if StudentTravelRegistrationFormDay.query.filter_by(
+        email=data["email"], event_name=data["event_name"]
+    ).first():
+        return (
+            jsonify({"message": "User already submitted form. Wait for approval."}),
+            200,
+        )
 
     db.session.add(student_registration_day)
     db.session.commit()
 
     return jsonify({"message": "Form submitted successfully"}), 200
+
 
 # Test Route
 @main.route("/")
