@@ -14,8 +14,8 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import SQLAlchemyError
 
 # New imports for uploading receipts
-# ******************************************
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
 
 from . import db
 from .models import (
@@ -27,17 +27,21 @@ from .models import (
     Receipt
 )
 
+
 main = Blueprint("main", __name__)
 
 # ***************IGNORE THIS PART FOR THE MOMENT - UPLOAD RECEIPT FUNCTIONALITY ***********#
 
-UPLOAD_FOLDER = "/uploaded_receipts"
+UPLOAD_FOLDER = "server/uploaded_receipts"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
 
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Create folder to store receipts if it doesnt exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 @main.route("/upload_receipt", methods=["POST"])
 def upload_receipt():
@@ -52,13 +56,31 @@ def upload_receipt():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+        file_path = os.path.normpath(file_path)
+ 
+        #If file already exists, then modify the name adding a counter
+        counter = 1
+        while os.path.exists(file_path):
+            name, ext = os.path.splitext(filename)
+            new_filename = f"{name}_{counter}{ext}"
+            file_path = os.path.join(UPLOAD_FOLDER, new_filename)
+            file_path = os.path.normpath(file_path)
+        
+            counter += 1
+        
+        
+        try:
+            file.save(file_path)
+        except Exception as e:
+          return jsonify({"error": str(e)}), 500
 
-        # Assuming the user ID is provided as part of the request
+        # iser id from clerk, appended to formData
         user_id = request.form.get("user_id")
 
         new_receipt = Receipt(
-            user_id=user_id, file_path=file_path, upload_date=datetime.utcnow()
+            user_id=user_id, 
+            file_path=file_path, 
+            upload_date=datetime.utcnow()
         )
         db.session.add(new_receipt)
         db.session.commit()
@@ -74,7 +96,10 @@ def upload_receipt():
 @main.route("/get_receipts", methods=["GET"])
 def get_receipts():
     try:
-        receipts = Receipt.query.all()
+        
+        current_user_id = request.args.get("user_id")
+        receipts = Receipt.query.filter_by(user_id=current_user_id).all()
+
         receipts_data = []
         for receipt in receipts:
             receipt_dict = {
@@ -88,11 +113,13 @@ def get_receipts():
             receipts_data.append(receipt_dict)
 
         # Return data as JSON
-        return jsonify({"receipts": "receipts_data"}), 200
+        return jsonify({"receipts": receipts_data}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+@main.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory('uploaded_receipts', filename)
 # **************************************************************************************************************
 
 email_sequence = {

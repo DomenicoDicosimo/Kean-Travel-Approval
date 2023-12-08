@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBar from "./NavBar";
-
+import { useUser } from '@clerk/clerk-react';
+ 
 const UploadReceipt = () => {
     const [selectedFile, setSelectedFile] = useState(null);
+    const { user } = useUser();
+    const [receipts, setReceipts] = useState([]);
 
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -18,22 +21,57 @@ const UploadReceipt = () => {
 
         const formData = new FormData();
         formData.append('file', selectedFile);
-        
-        // Add user_id or other necessary fields to formData if needed
-        // formData.append('user_id', 'your_user_id');
+
+        if(user) {
+            formData.append('user_id', user.id);
+        }
 
         try {
-            await axios.post('/upload_receipt', formData, {
+            await axios.post('http://localhost:5000/upload_receipt', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            // Handle successful upload...
+            alert('File uploaded successfully');
+
         } catch (error) {
-            // Handle error...
             console.error('Error uploading file:', error);
+            alert('Error uploading file')
         }
     };
+
+    const renderReceipt = (receipt) => {
+        const fileExtension = receipt.file_path.split('.').pop().toLowerCase();
+        const filename = receipt.file_path.split('\\').pop();
+        if(['jpg', 'jpeg', 'png'].includes(fileExtension)) {
+            return <img src={receipt.file_path} alt={`Receipt ${receipt.id}`} />;
+        } 
+        else if (fileExtension === 'pdf') {
+            return <a href={`http://localhost:5000/uploads/${filename}`} target="_blank" rel="noopener noreferrer">View PDF</a>;
+        }
+        else {
+            return <span>Unsupported file format</span>;
+        }
+    };
+
+    const fetchReceipts = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/get_receipts?user_id=${user.id}`);
+            console.log(response.data.receipts);
+            setReceipts(response.data.receipts);
+        }
+        catch (error){
+            console.error('Error fecthing receipts:', error);
+        }
+    };
+
+    useEffect(() => {
+        if(user) { 
+            fetchReceipts();
+        }
+       
+    }, [user]);
+
 
     return (
         <div>
@@ -44,6 +82,17 @@ const UploadReceipt = () => {
                     <input type="file" onChange={handleFileChange} />
                     <button type="submit">Upload</button>
                 </form>
+
+                <div>
+                    <h2>Uploaded Receipts</h2>
+                    <ul>
+                        {receipts.map(receipt => (
+                            <li key={receipt.id}>
+                            {renderReceipt(receipt)}
+                        </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </div>
     );
