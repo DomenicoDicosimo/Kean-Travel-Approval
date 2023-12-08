@@ -325,6 +325,7 @@ class StudentTravelRegistrationFormDay(db.Model):
     state = db.Column(db.String(2))
     zip = db.Column(db.String(10))
 
+
     # New fields
     parent_name = db.Column(db.String(100))
     parent_signature = db.Column(db.String(100))
@@ -343,6 +344,10 @@ class StudentTravelRegistrationFormDay(db.Model):
     agree_to_ferpa = db.Column(db.Boolean, default=False)
     financial_obligation = db.Column(db.Boolean, default=False)
     participant_certification = db.Column(db.Boolean, default=False)
+
+    #Approval Fields
+    CurrentRouteID = db.Column(db.Integer, nullable=True)
+    CurrentApprovalLevelID = db.Column(db.Integer, nullable=True)
 
     def to_dict(self):
         return {
@@ -380,6 +385,8 @@ class StudentTravelRegistrationFormDay(db.Model):
             "agree_to_ferpa": self.agree_to_ferpa,
             "financial_obligation": self.financial_obligation,
             "participant_certification": self.participant_certification,
+            "CurrentRouteID": self.CurrentRouteID,
+            "CurrentApprovalLevel":self.CurrentApprovalLevelID,
         }
 
     def __repr__(self):
@@ -405,6 +412,10 @@ class TravelAuthorizationRequestForm(db.Model):
     destination = db.Column(db.String(255))
     conference_name = db.Column(db.String(255))
 
+    #Approval Fields
+    CurrentRouteID = db.Column(db.Integer, nullable=True)
+    CurrentApprovalLevelID = db.Column(db.Integer, nullable=True)
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -422,6 +433,8 @@ class TravelAuthorizationRequestForm(db.Model):
             "return_date": str(self.return_date),
             "destination": self.destination,
             "conference_name": self.conference_name,
+            "CurrentRouteID": self.CurrentRouteID,
+            "CurrentApprovalLevel":self.CurrentApprovalLevelID,
         }
 
     def __repr__(self):
