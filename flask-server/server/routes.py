@@ -30,8 +30,6 @@ from .models import (
 
 main = Blueprint("main", __name__)
 
-# ***************IGNORE THIS PART FOR THE MOMENT - UPLOAD RECEIPT FUNCTIONALITY ***********#
-
 UPLOAD_FOLDER = "server/uploaded_receipts"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
 
@@ -120,7 +118,6 @@ def get_receipts():
 @main.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory('uploaded_receipts', filename)
-# **************************************************************************************************************
 
 email_sequence = {
     "current_step": 0,
