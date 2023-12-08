@@ -458,9 +458,7 @@ def submit_travel_ethics_form():
     db.session.add(Travel_Ethics_Form)
     db.session.commit()
 
-    return jsonify(
-        {"message": "Form submitted successfully", "FormID": TravelEthicsForm.FormID}
-    )
+    return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
 
 
 @main.route("/submit_expenses", methods=["POST"])

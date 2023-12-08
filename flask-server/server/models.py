@@ -74,8 +74,8 @@ class ApprovalLevel(db.Model):
 
 class ApprovalRoute(db.Model):
     __tablename__ = "ApprovalRoute"
-
-    RouteID = db.Column(db.Integer, primary_key=True)
+    ID = db.Column(db.Integer, primary_key=True)
+    RouteID = db.Column(db.Integer, nullable=False)
     FundingSource = db.Column(db.String(50), nullable=False)
     ApprovalOrder = db.Column(db.Integer, nullable=False)
     LevelID = db.Column(
@@ -84,6 +84,7 @@ class ApprovalRoute(db.Model):
 
     def to_dict(self):
         return {
+            "ID": self.ID,
             "RouteID": self.RouteID,
             "FundingSource": self.FundingSource,
             "ApprovalOrder": self.ApprovalOrder,
@@ -114,7 +115,7 @@ class Approver(db.Model):
     __tablename__ = "Approver"
 
     ApproverID = db.Column(db.Integer, primary_key=True)
-    UserID = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable=False)
+    UserID = db.Column(db.String(50), db.ForeignKey("Users.id"), nullable=False)
     LevelID = db.Column(
         db.Integer, db.ForeignKey("ApprovalLevel.LevelID"), nullable=False
     )
@@ -430,28 +431,31 @@ class TravelAuthorizationRequestForm(db.Model):
 class FormApproval(db.Model):
     __tablename__ = "FormApproval"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    form_id = db.Column(db.Integer, nullable=False)
-    approval_route_id = db.Column(
-        db.Integer, db.ForeignKey("ApprovalRoute.RouteID"), nullable=False
-    )
-    approval_status_id = db.Column(
+    ApprovalID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    StatusID = db.Column(
         db.Integer, db.ForeignKey("ApprovalStatus.StatusID"), nullable=False
     )
-    approver_id = db.Column(
+    ApproverID = db.Column(
         db.Integer, db.ForeignKey("Approver.ApproverID"), nullable=False
     )
-    approval_date = db.Column(db.Date)
+    StudentTravelRegFormDayID = db.Column(
+        db.Integer, db.ForeignKey("Test.id")  # Assuming 'Test' is the table for StudentTravelRegistrationFormDay
+    )
+    TravelAuthRequestFormID = db.Column(
+        db.Integer, db.ForeignKey("travel_authorization_request_form.id")
+    )
+    ApprovalDate = db.Column(db.Date)
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "form_id": self.form_id,
-            "approval_route_id": self.approval_route_id,
-            "approval_status_id": self.approval_status_id,
-            "approver_id": self.approver_id,
-            "approval_date": self.approval_date,
+            "ApprovalID": self.ApprovalID,
+            "StatusID": self.StatusID,
+            "ApproverID": self.ApproverID,
+            "StudentTravelRegFormDayID": self.StudentTravelRegFormDayID,
+            "TravelAuthRequestFormID": self.TravelAuthRequestFormID,
+            "ApprovalDate": str(self.ApprovalDate),
         }
 
     def __repr__(self):
-        return f"<FormApproval {self.id}>"
+        return f"<FormApproval(ApprovalID={self.ApprovalID}, StatusID={self.StatusID}, ApproverID={self.ApproverID}, StudentTravelRegFormDayID={self.StudentTravelRegFormDayID}, TravelAuthRequestFormID={self.TravelAuthRequestFormID}, ApprovalDate={self.ApprovalDate})>"
+
