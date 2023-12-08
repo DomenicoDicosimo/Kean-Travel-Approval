@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBar from "./NavBar";
+import  { Spinner } from '@chakra-ui/react';
 import { useUser } from '@clerk/clerk-react';
+import {
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    List,
+    ListItem,
+  
+    Heading,
+    Flex, 
+    Container
+} from '@chakra-ui/react';
  
 const UploadReceipt = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const { user } = useUser();
     const [receipts, setReceipts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -27,11 +42,12 @@ const UploadReceipt = () => {
         }
 
         try {
-            await axios.post('http://localhost:5000/upload_receipt', formData, {
+            const response = await axios.post('http://localhost:5000/upload_receipt', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            console.log(response.data);
             alert('File uploaded successfully');
 
         } catch (error) {
@@ -47,7 +63,7 @@ const UploadReceipt = () => {
             return <img src={receipt.file_path} alt={`Receipt ${receipt.id}`} />;
         } 
         else if (fileExtension === 'pdf') {
-            return <a href={`http://localhost:5000/uploads/${filename}`} target="_blank" rel="noopener noreferrer">View PDF</a>;
+            return <a href={`http://localhost:5000/uploads/${filename}`} target="_blank" rel="noopener noreferrer">{filename}</a>;
         }
         else {
             return <span>Unsupported file format</span>;
@@ -55,13 +71,16 @@ const UploadReceipt = () => {
     };
 
     const fetchReceipts = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`http://localhost:5000/get_receipts?user_id=${user.id}`);
             console.log(response.data.receipts);
             setReceipts(response.data.receipts);
+            setIsLoading(false);
         }
         catch (error){
             console.error('Error fecthing receipts:', error);
+            setIsLoading(false);
         }
     };
 
@@ -74,27 +93,42 @@ const UploadReceipt = () => {
 
 
     return (
-        <div>
-            <NavBar />
-            <div className="upload-receipt-container">
-                <h1>Upload Receipt</h1>
-                <form onSubmit={handleSubmit}>
-                    <input type="file" onChange={handleFileChange} />
-                    <button type="submit">Upload</button>
-                </form>
+        <>
+        <NavBar />
+        <Container maxW="container.xl" centerContent>
+        <Flex direction={["column", "column", "row"]} my={8} width="full" alignItems="start">
 
-                <div>
-                    <h2>Uploaded Receipts</h2>
-                    <ul>
-                        {receipts.map(receipt => (
-                            <li key={receipt.id}>
-                            {renderReceipt(receipt)}
-                        </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        </div>
+            <Box flex="1" pr={[0, 0, 6]}>
+                <Heading mb={4}>Upload Receipt</Heading>
+                <form onSubmit={handleSubmit}>
+                    <FormControl isRequired>
+                        <FormLabel>Receipt File</FormLabel>
+                        <Input type="file" onChange={handleFileChange} p={1} />
+                    </FormControl>
+                    <Button mt={4} colorScheme="blue" type="submit">Upload</Button>
+                </form>
+            </Box>
+
+            {/* Show spinner when loading info */}
+            <Box flex="1" pl={[0, 0, 6]} width="full">
+                <Heading mb={4}>Uploaded Receipts</Heading>
+                {isLoading ? (
+                    <Spinner /> 
+                ) :  receipts.length > 0 ? (
+                        <List spacing={3}>
+                            {receipts.map(receipt => (
+                                <ListItem key={receipt.id} boxShadow="base" p={4} rounded="md">
+                                    {renderReceipt(receipt)}
+                                </ListItem>
+                            ))}
+                        </List>
+                    ) : (
+                        <Box>No receipts</Box> 
+                )}             
+            </Box>
+        </Flex>
+    </Container>
+    </>
     );
 };
 
