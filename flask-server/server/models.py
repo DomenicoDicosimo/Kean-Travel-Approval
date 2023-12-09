@@ -311,8 +311,8 @@ class StudentTravelRegistrationFormDay(db.Model):
     event_name = db.Column(db.String(255))
     event_date = db.Column(db.Date)
     host_organization = db.Column(db.String(255))
-    departure_time = db.Column(db.DateTime)
-    approximate_return_time = db.Column(db.DateTime)
+    departure_time = db.Column(db.DateTime)  # TODO - Change to Time
+    approximate_return_time = db.Column(db.DateTime)  # TODO - Change to Time
     minimum_age_requirement = db.Column(db.Integer)
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
@@ -324,7 +324,6 @@ class StudentTravelRegistrationFormDay(db.Model):
     city = db.Column(db.String(255))
     state = db.Column(db.String(2))
     zip = db.Column(db.String(10))
-
 
     # New fields
     parent_name = db.Column(db.String(100))
@@ -345,7 +344,7 @@ class StudentTravelRegistrationFormDay(db.Model):
     financial_obligation = db.Column(db.Boolean, default=False)
     participant_certification = db.Column(db.Boolean, default=False)
 
-    #Approval Fields
+    # Approval Fields
     CurrentRouteID = db.Column(db.Integer, nullable=True)
     CurrentApprovalLevelID = db.Column(db.Integer, nullable=True)
 
@@ -386,7 +385,7 @@ class StudentTravelRegistrationFormDay(db.Model):
             "financial_obligation": self.financial_obligation,
             "participant_certification": self.participant_certification,
             "CurrentRouteID": self.CurrentRouteID,
-            "CurrentApprovalLevel":self.CurrentApprovalLevelID,
+            "CurrentApprovalLevel": self.CurrentApprovalLevelID,
         }
 
     def __repr__(self):
@@ -412,7 +411,7 @@ class TravelAuthorizationRequestForm(db.Model):
     destination = db.Column(db.String(255))
     conference_name = db.Column(db.String(255))
 
-    #Approval Fields
+    # Approval Fields
     CurrentRouteID = db.Column(db.Integer, nullable=True)
     CurrentApprovalLevelID = db.Column(db.Integer, nullable=True)
 
@@ -434,7 +433,7 @@ class TravelAuthorizationRequestForm(db.Model):
             "destination": self.destination,
             "conference_name": self.conference_name,
             "CurrentRouteID": self.CurrentRouteID,
-            "CurrentApprovalLevel":self.CurrentApprovalLevelID,
+            "CurrentApprovalLevel": self.CurrentApprovalLevelID,
         }
 
     def __repr__(self):
@@ -452,7 +451,10 @@ class FormApproval(db.Model):
         db.Integer, db.ForeignKey("Approver.ApproverID"), nullable=False
     )
     StudentTravelRegFormDayID = db.Column(
-        db.Integer, db.ForeignKey("Test.id")  # Assuming 'Test' is the table for StudentTravelRegistrationFormDay
+        db.Integer,
+        db.ForeignKey(
+            "Test.id"
+        ),  # Assuming 'Test' is the table for StudentTravelRegistrationFormDay
     )
     TravelAuthRequestFormID = db.Column(
         db.Integer, db.ForeignKey("travel_authorization_request_form.id")
@@ -471,4 +473,3 @@ class FormApproval(db.Model):
 
     def __repr__(self):
         return f"<FormApproval(ApprovalID={self.ApprovalID}, StatusID={self.StatusID}, ApproverID={self.ApproverID}, StudentTravelRegFormDayID={self.StudentTravelRegFormDayID}, TravelAuthRequestFormID={self.TravelAuthRequestFormID}, ApprovalDate={self.ApprovalDate})>"
-
