@@ -475,6 +475,56 @@ def submit_expenses():
         # Log the exception here
         return jsonify({"error": "Database error"}), 500
 
+@main.route('/submit-approval', methods=['POST'])
+def submit_approval():
+    # Extract form ID and approver ID from request
+    data = request.json
+    id = data['id']
+    approver_id = data['approver_id']
+
+    # Retrieve the form and approver from the database
+    form = StudentTravelRegistrationFormDay.query.get(id)
+    approver = Approver.query.get(approver_id)
+
+    # Check if the approver is authorized for the current level
+    if approver.LevelID != form.CurrentApprovalLevelID:
+        return jsonify({"message": "Approver not authorized for this level"}), 403
+
+    # Find the next level in the route
+    next_level = ApprovalRoute.query.filter_by(
+        RouteID=form.CurrentRouteID, 
+        ApprovalOrder=form.CurrentApprovalLevelID + 1
+    ).first()
+
+    # If there's a next level, update the form
+    if next_level:
+        form.CurrentApprovalLevelID = next_level.LevelID
+    else:
+        # If there's no next level, it means the approval process is complete
+        form.CurrentApprovalLevelID = None
+
+    db.session.commit()
+
+    return jsonify({"message": "Approval submitted successfully"}), 200
+
+@main.route('/forms-for-approval', methods=['GET'])
+def get_forms_for_approval():
+    user_id = request.args.get('user_id') 
+
+    # Check if the user is an approver and retrieve their level
+    approver = Approver.query.filter_by(UserID=user_id).first()
+    if not approver:
+        return jsonify({"message": "User is not an approver or does not exist"}), 404
+
+    approval_level_id = approver.LevelID
+
+    # Fetch student travel forms at the approver's level
+    student_travel_forms = StudentTravelRegistrationFormDay.query.filter_by(CurrentApprovalLevelID=approval_level_id).all()
+
+    student_travel_forms_data = [form.to_dict() for form in student_travel_forms]
+
+    return jsonify({'student_travel_forms': student_travel_forms_data}), 200
+
 
 # Test Route
 @main.route("/")
