@@ -501,13 +501,29 @@ def submit_approval():
         form.CurrentApprovalLevelID = next_level.LevelID
     else:
         # If there's no next level, it means the approval process is complete
-        # You can set a status indicating the form is fully approved
-        form.CurrentApprovalLevelID = None  # or a specific ID indicating completion
+        form.CurrentApprovalLevelID = None
 
-    # Update the database
     db.session.commit()
 
     return jsonify({"message": "Approval submitted successfully"}), 200
+
+@main.route('/forms-for-approval', methods=['GET'])
+def get_forms_for_approval():
+    user_id = request.args.get('user_id') 
+
+    # Check if the user is an approver and retrieve their level
+    approver = Approver.query.filter_by(UserID=user_id).first()
+    if not approver:
+        return jsonify({"message": "User is not an approver or does not exist"}), 404
+
+    approval_level_id = approver.LevelID
+
+    # Fetch student travel forms at the approver's level
+    student_travel_forms = StudentTravelRegistrationFormDay.query.filter_by(CurrentApprovalLevelID=approval_level_id).all()
+
+    student_travel_forms_data = [form.to_dict() for form in student_travel_forms]
+
+    return jsonify({'student_travel_forms': student_travel_forms_data}), 200
 
 
 # Test Route
