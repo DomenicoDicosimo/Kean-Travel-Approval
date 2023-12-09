@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import NavBar from './NavBar';
 import axios from 'axios';
-// import { useUser } from '@clerk/clerk-react';
 import {
   Box,
   FormControl,
@@ -14,6 +13,8 @@ import {
   Radio,
   RadioGroup,
   Input,
+  InputGroup,
+  InputLeftAddon,
 } from '@chakra-ui/react';
 export default function DisplayStudentTravelRegistrationFormDay({
   userEmail,
@@ -22,8 +23,6 @@ export default function DisplayStudentTravelRegistrationFormDay({
   isUnderage,
 }) {
   const [formData, setFormData] = useState(null);
-  // const { user } = useUser();
-  // const userEmail = user?.emailAddresses[0]?.emailAddress;
   DisplayStudentTravelRegistrationFormDay.propTypes = {
     userEmail: PropTypes.string,
     formId: PropTypes.string,
@@ -44,18 +43,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
     return <div>Loading...</div>;
   }
 
-  // function calculateAge(date_of_birth) {
-  //   const dob = new Date(date_of_birth);
-  //   const today = new Date();
-  //   let age = today.getFullYear() - dob.getFullYear();
-  //   const numMonths = today.getMonth() - dob.getMonth();
-  //   if (numMonths < 0 || (numMonths === 0 && today.getDate() < dob.getDate())) {
-  //     age--;
-  //   }
-  //   return age;
-  // }
-  // const age = calculateAge(formData.form.date_of_birth);
-
+  // FIXME formatDate is a day ahead
   function formatDate(date) {
     const dateObj = new Date(date);
     const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
@@ -155,7 +143,6 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <Input value={formatPhoneNumber(formData.form.phone_number)} isReadOnly />
             </FormControl>
             <FormControl>
-              {/* FIXME Look into why my DOB comes in as 01/22 */}
               <FormLabel htmlFor="date_of_birth">Date of Birth</FormLabel>
               <Input value={formatDate(formData.form.date_of_birth)} isReadOnly />
             </FormControl>
@@ -192,15 +179,15 @@ export default function DisplayStudentTravelRegistrationFormDay({
           {/* Parent/Guardian Information for Underage Participants - Part of Section 2*/}
           {isUnderage && (
             <Box>
-              <Text>Parent/Guardians Information (Required for participants under 18)</Text>
+              <Text>Parent/Guardian Information (Required for participants under 18)</Text>
               <HStack>
                 <FormControl>
-                  <FormLabel htmlFor="parent_name">Parent/Guardian Name</FormLabel>
+                  <FormLabel htmlFor="parent_name">Parent/Guardian&apos;s Name</FormLabel>
                   <Input value={formData.form.parent_name} isReadOnly />
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel htmlFor="parent_signature">Parent/Guardian Signature</FormLabel>
+                  <FormLabel htmlFor="parent_signature">Parent/Guardian&apos;s Signature</FormLabel>
                   <Input value={formData.form.parent_signature} isReadOnly />
                 </FormControl>
 
@@ -212,7 +199,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
 
               <FormControl>
                 <FormLabel htmlFor="parent_contact_number">
-                  Parent/Guardian Contact Number
+                  Parent/Guardian&apos;s Contact Number
                 </FormLabel>
                 <Input value={formatPhoneNumber(formData.form.parent_contact_number)} isReadOnly />
               </FormControl>
@@ -235,7 +222,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
           <FormControl>
             <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
             {/* FIXME Coming in backwards */}
-            <RadioGroup defaultValue={usingUniversityTransport ? 'yes' : 'no'}>
+            <RadioGroup defaultValue={!usingUniversityTransport ? 'yes' : 'no'}>
               <Stack direction="row">
                 <Radio value="yes" isReadOnly>
                   Yes
@@ -247,7 +234,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
             </RadioGroup>
           </FormControl>
 
-          {!usingUniversityTransport && (
+          {usingUniversityTransport && (
             <FormControl display="flex" alignItems="center">
               <Checkbox
                 name="transportationWaiver"
@@ -281,7 +268,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
                   Not Applicable
                 </Radio>
                 <Radio isReadOnly value="yes">
-                  Required: Complete Studdent Financial Obligation Acknowledgement Below.
+                  Required: Complete Student Financial Obligation Acknowledgement Below.
                 </Radio>
               </Stack>
             </RadioGroup>
@@ -292,16 +279,24 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <HStack>
                 <FormControl>
                   <FormLabel>Paid Ticket Price</FormLabel>
-                  <Input value={`$${formData.form.paid_ticket_price}`} isReadOnly />
+                  <InputGroup>
+                    <InputLeftAddon>$</InputLeftAddon>
+                    <Input value={formData.form.paid_ticket_price} isReadOnly />
+                  </InputGroup>
                 </FormControl>
                 <FormControl>
                   <FormLabel>Other Activity Costs</FormLabel>
-                  <Input value={`$${formData.form.other_activity_costs}`} isReadOnly />
+                  <InputGroup>
+                    <InputLeftAddon>$</InputLeftAddon>
+                    <Input value={formData.form.other_activity_costs} isReadOnly />
+                  </InputGroup>
                 </FormControl>
-
                 <FormControl>
                   <FormLabel>Total Financial Obligation</FormLabel>
-                  <Input value={`$${formData.form.total_financial_obligation}`} isReadOnly />
+                  <InputGroup>
+                    <InputLeftAddon>$</InputLeftAddon>
+                    <Input value={formData.form.total_financial_obligation} isReadOnly />
+                  </InputGroup>
                 </FormControl>
               </HStack>
 
