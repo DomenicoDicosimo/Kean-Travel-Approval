@@ -11,6 +11,7 @@ import DisplayStudentTravelRegistrationFormDay from './components/DisplayStudent
 import TravelAuthorizationRequestForm from './components/TravelAuthorizationRequestForm';
 import TestDatabase from './components/TestDatabase';
 import UploadReceipt from './components/UploadReceipt';
+import FacultyDashboard from './components/FacultyDashboard';
 
 if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
   throw new Error('Missing Clerk Publishable Key');
@@ -107,7 +108,8 @@ function App() {
                 }
               />
               <Route path="/upload-receipts" element={<UploadReceipt />} />
-              <Route path="/dashboard/*" element={<Dashboard />}></Route>
+              <Route path="/dashboard" element={<Dashboard />}></Route>
+              <Route path="/faculty-dashboard" element={<FacultyDashboard />}></Route>
             </Routes>
           </BrowserRouter>
         </ChakraProvider>
