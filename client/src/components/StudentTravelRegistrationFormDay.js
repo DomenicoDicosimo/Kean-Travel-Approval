@@ -121,6 +121,7 @@ export default function StudentTravelRegistrationFormDay() {
     console.log(data);
   };
 
+  // TODO - Add form validation
   return (
     <>
       <NavBar />
@@ -243,7 +244,8 @@ export default function StudentTravelRegistrationFormDay() {
                   type="text"
                   id="kuid"
                   name="kuid"
-                  placeholder="KUID"
+                  placeholder="1234567"
+                  pattern="[0-9]{7}"
                   onChange={handleInputChange}
                   value={formData.kuid}
                 />
@@ -257,6 +259,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="email"
                   name="email"
                   placeholder="Email"
+                  pattern="[a-z0-9._%+-]+@kean\.edu$"
                   onChange={handleInputChange}
                   value={formData.email}
                 />
@@ -270,7 +273,7 @@ export default function StudentTravelRegistrationFormDay() {
                     id="phone_number"
                     name="phone_number"
                     placeholder="123-456-7890"
-                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    pattern="\d{10}|\d{3}-\d{3}-\d{4}|\(\d{3}\)\d{3}-\d{4}|\(\d{3}\) \d{3}-\d{4}"
                     onChange={handleInputChange}
                     value={formData.phone_number}
                   />
@@ -343,6 +346,7 @@ export default function StudentTravelRegistrationFormDay() {
                 name="agreeToRelease"
                 isChecked={formData.agreeToRelease}
                 onChange={handleInputChange}
+                isRequired={true}
               >
                 I agree to the Release and Indemnification Agreement
               </Checkbox>
@@ -380,10 +384,10 @@ export default function StudentTravelRegistrationFormDay() {
             {/* Parent/Guardian Information for Underage Participants - Part of Section 2*/}
             {isUnderage && (
               <Box>
-                <Text>Parent/Guardians Information (Required for participants under 18)</Text>
+                <Text>Parent/Guardian Information (Required for participants under 18)</Text>
                 <HStack>
                   <FormControl isRequired>
-                    <FormLabel htmlFor="parent_name">Parent/Guardian Name</FormLabel>
+                    <FormLabel htmlFor="parent_name">Parent/Guardian&apos;s Name</FormLabel>
                     <Input
                       type="text"
                       id="parent_name"
@@ -393,7 +397,9 @@ export default function StudentTravelRegistrationFormDay() {
                   </FormControl>
 
                   <FormControl isRequired>
-                    <FormLabel htmlFor="parent_signature">Parent/Guardian Signature</FormLabel>
+                    <FormLabel htmlFor="parent_signature">
+                      Parent/Guardian&apos;s Signature
+                    </FormLabel>
                     <Input
                       type="text"
                       id="parent_signature"
@@ -424,7 +430,7 @@ export default function StudentTravelRegistrationFormDay() {
                       id="parent_contact_number"
                       name="parent_contact_number"
                       placeholder="123-456-7890"
-                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                      pattern="\d{10}|\d{3}-\d{3}-\d{4}|\(\d{3}\)\d{3}-\d{4}|\(\d{3}\) \d{3}-\d{4}"
                       onChange={handleInputChange}
                     />
                   </InputGroup>
@@ -545,7 +551,7 @@ export default function StudentTravelRegistrationFormDay() {
                 <Stack direction="row">
                   <Radio value="notApplicable">Not Applicable</Radio>
                   <Radio value="required">
-                    Required: Complete Studdent Financial Obligation Acknowledgement Below.
+                    Required: Complete Student Financial Obligation Acknowledgement Below.
                   </Radio>
                 </Stack>
               </RadioGroup>
@@ -556,37 +562,46 @@ export default function StudentTravelRegistrationFormDay() {
                 <HStack>
                   <FormControl isRequired>
                     <FormLabel htmlFor="paidTicketPrice">Paid Ticket Price</FormLabel>
-                    <Input
-                      id="paidTicketPrice"
-                      name="paidTicketPrice"
-                      type="number"
-                      onChange={handleInputChange}
-                      placeholder="Enter paid ticket price"
-                    />
+                    <InputGroup>
+                      <InputLeftAddon>$</InputLeftAddon>
+                      <Input
+                        id="paidTicketPrice"
+                        name="paidTicketPrice"
+                        type="number"
+                        onChange={handleInputChange}
+                        placeholder="Enter paid ticket price"
+                      />
+                    </InputGroup>
                   </FormControl>
                   <FormControl isRequired>
                     <FormLabel htmlFor="otherActivityCosts">Other Activity Costs</FormLabel>
-                    <Input
-                      id="otherActivityCosts"
-                      name="otherActivityCosts"
-                      type="number"
-                      onChange={handleInputChange}
-                      placeholder="Enter other activity costs"
-                    />
+                    <InputGroup>
+                      <InputLeftAddon>$</InputLeftAddon>
+                      <Input
+                        id="otherActivityCosts"
+                        name="otherActivityCosts"
+                        type="number"
+                        onChange={handleInputChange}
+                        placeholder="Enter other activity costs"
+                      />
+                    </InputGroup>
                   </FormControl>
 
                   <FormControl>
                     <FormLabel htmlFor="totalFinancialObligation">
                       Total Financial Obligation
                     </FormLabel>
-                    <Input
-                      id="totalFinancialObligation"
-                      name="totalFinancialObligation"
-                      type="number"
-                      value={formData.totalFinancialObligation}
-                      placeholder="Total will be calculated automatically"
-                      readOnly
-                    />
+                    <InputGroup>
+                      <InputLeftAddon>$</InputLeftAddon>
+                      <Input
+                        id="totalFinancialObligation"
+                        name="totalFinancialObligation"
+                        type="number"
+                        value={formData.totalFinancialObligation}
+                        placeholder=""
+                        readOnly
+                      />
+                    </InputGroup>
                   </FormControl>
                 </HStack>
 
@@ -661,7 +676,7 @@ export default function StudentTravelRegistrationFormDay() {
                     id="emergencyContactPhone"
                     name="emergencyContactPhone"
                     placeholder="123-456-7890"
-                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    pattern="\d{10}|\d{3}-\d{3}-\d{4}|\(\d{3}\)\d{3}-\d{4}|\(\d{3}\) \d{3}-\d{4}"
                     onChange={handleInputChange}
                   />
                 </InputGroup>
