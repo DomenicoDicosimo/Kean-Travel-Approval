@@ -430,7 +430,7 @@ def submit_travel_ethics_form():
     return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
 
 
-@main.route("/submit-expenses", methods=["POST"])
+@main.route("/submit_expenses", methods=["POST"])
 def submit_expenses():
     data = request.json
 
@@ -477,25 +477,14 @@ def submit_expenses():
 
 @main.route('/submit-approval', methods=['POST'])
 def submit_approval():
+    # Extract form ID and approver ID from request
     data = request.json
-    id = data['form_id']
-    form_type = data['form_type'] 
+    id = data['id']
     approver_id = data['approver_id']
 
-    # Determine which form model to use based on form_type
-    if form_type == 'student_travel':
-        form_model = StudentTravelRegistrationFormDay
-    elif form_type == 'travel_authorization':
-        form_model = TravelAuthorizationRequestForm
-    else:
-        return jsonify({"message": "Invalid form type"}), 400
-
     # Retrieve the form and approver from the database
-    form = form_model.query.get(id)
+    form = StudentTravelRegistrationFormDay.query.get(id)
     approver = Approver.query.get(approver_id)
-
-    if not form:
-        return jsonify({"message": "Form not found"}), 404
 
     # Check if the approver is authorized for the current level
     if approver.LevelID != form.CurrentApprovalLevelID:
@@ -507,17 +496,18 @@ def submit_approval():
         ApprovalOrder=form.CurrentApprovalLevelID + 1
     ).first()
 
-    # Update the form's approval level
+    # If there's a next level, update the form
     if next_level:
         form.CurrentApprovalLevelID = next_level.LevelID
     else:
-        # No next level, approval process is complete
-        form.CurrentApprovalLevelID = None  
+        # If there's no next level, it means the approval process is complete
+        # You can set a status indicating the form is fully approved
+        form.CurrentApprovalLevelID = None  # or a specific ID indicating completion
 
+    # Update the database
     db.session.commit()
 
     return jsonify({"message": "Approval submitted successfully"}), 200
-
 
 
 # Test Route
