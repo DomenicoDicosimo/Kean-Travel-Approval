@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import NavBar from './NavBar';
 import { useUser, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
 import {
@@ -186,40 +187,41 @@ export default function Dashboard() {
                         Form Description
                       </Text>
                       <HStack>
-                        <Wrap>
-                          <WrapItem>
-                            <Badge bg="blue.300" color="white">
-                              FORM-ID: {form.form.id || 'N/A'}
-                            </Badge>
-                          </WrapItem>
-                          <WrapItem>
-                            <Badge bg="blue.300" color="white">
-                              EVENT: {form.form.event_name || 'N/A'}
-                            </Badge>
-                          </WrapItem>
-                          <WrapItem>
-                            <Badge bg="blue.500" color="white">
-                              SUBMITTED BY:{' '}
-                              {(form.form.first_name || '') + ' ' + (form.form.last_name || '')}
-                            </Badge>
-                          </WrapItem>
-                          <WrapItem>
-                            <Badge bg="red.500" color="white">
-                              Departure Time:{' '}
-                              {form.form.departure_time
-                                ? new Date(form.form.departure_time).toLocaleString()
-                                : 'N/A'}
-                            </Badge>
-                          </WrapItem>
-                          <WrapItem>
-                            <Badge
-                              bg={form.role === 'faculty' ? 'purple.300' : 'yellow.300'}
-                              color="white"
-                            >
-                              {form.role}
-                            </Badge>
-                          </WrapItem>
-                        </Wrap>
+                        <Link
+                          to={`/display-student-travel-registration-form-day?formId=${
+                            form.form.id || 'N/A'
+                          }&email=${email}`}
+                        >
+                          <Wrap>
+                            <WrapItem>
+                              <Badge bg="blue.300" color="white">
+                                EVENT: {form.form.event_name || 'N/A'}
+                              </Badge>
+                            </WrapItem>
+                            <WrapItem>
+                              <Badge bg="blue.500" color="white">
+                                SUBMITTED BY:{' '}
+                                {(form.form.first_name || '') + ' ' + (form.form.last_name || '')}
+                              </Badge>
+                            </WrapItem>
+                            <WrapItem>
+                              <Badge bg="red.500" color="white">
+                                Departure Time:{' '}
+                                {form.form.departure_time
+                                  ? new Date(form.form.departure_time).toLocaleString()
+                                  : 'N/A'}
+                              </Badge>
+                            </WrapItem>
+                            <WrapItem>
+                              <Badge
+                                bg={form.role === 'faculty' ? 'purple.300' : 'yellow.300'}
+                                color="white"
+                              >
+                                {form.role}
+                              </Badge>
+                            </WrapItem>
+                          </Wrap>
+                        </Link>
                       </HStack>
                       <Divider />
                     </Box>
