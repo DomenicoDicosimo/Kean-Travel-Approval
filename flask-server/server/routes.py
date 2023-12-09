@@ -130,17 +130,6 @@ email_sequence = {
 }
 
 
-# USERS
-@main.route("/users")
-def get_all_users():
-    """
-    Returns a JSON representation of all users in the database.
-    """
-
-    users = User.query.all()
-    return jsonify([u.to_dict() for u in users])
-
-
 @main.route("/add_user", methods=["POST"])
 def add_user():
     data = request.json
@@ -166,6 +155,18 @@ def add_user():
     db.session.commit()
     return jsonify({"message": "User added successfully!"}), 200
 
+# get user role
+@main.route('/get-user-role', methods=['GET'])
+def get_user_role():
+    user_id = request.args.get('user_id') 
+
+    user = User.query.filter_by(id=user_id).first()
+    
+    if user:
+        return jsonify({'role': user.role}), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
+    
 
 # Route to add user from clerk if not in Users table
 @main.route("/check-user-exists", methods=["GET"])
@@ -218,6 +219,11 @@ def get_all_student_forms():
     """
 
     forms = StudentTravelRegistrationFormDay().query.all()
+    return jsonify([f.to_dict() for f in forms])
+
+@main.route("/travel-authorization-forms")
+def get_all_travel_authorization_forms():
+    forms = TravelAuthorizationRequestForm().query.all()
     return jsonify([f.to_dict() for f in forms])
 
 
@@ -371,6 +377,8 @@ def submit_student_travel_authorization_request_form():
     db.session.commit()
 
     return jsonify({"message": "Form submitted successfully"}), 200
+
+
 
 
 @main.route("/travel_ethics_form")

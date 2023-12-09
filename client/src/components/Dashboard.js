@@ -13,7 +13,6 @@ import {
     Stack,
     StackDivider,
     Text,
-    Divider,
     Badge, HStack, Wrap, WrapItem
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -123,7 +122,6 @@ export default function Dashboard() {
                                 <Stack divider={<StackDivider/>} spacing='4'>
                                     {data.map((form, index) => (
                                         <Box key={index} textAlign="left" border="1px" p={4} _hover={{ bg: 'gray.100' }} borderRadius="md" borderColor="gray.300">                                   
-                                            <Divider/>
                                             <Heading size='xs' textTransform='uppercase'>
                                                 TRAVEL AUTORIZATION REQUEST (FORM A)
                                             </Heading>
@@ -146,7 +144,6 @@ export default function Dashboard() {
                                                     </WrapItem>
                                                 </Wrap>
                                             </HStack>
-                                            <Divider/>
                                         </Box>
                                     ))}
                                 </Stack>

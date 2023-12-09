@@ -11,7 +11,6 @@ import {
     Input,
     List,
     ListItem,
-  
     Heading,
     Flex, 
     Container
@@ -70,25 +69,22 @@ const UploadReceipt = () => {
         }
     };
 
-    const fetchReceipts = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axios.get(`http://localhost:5000/get_receipts?user_id=${user.id}`);
-            console.log(response.data.receipts);
-            setReceipts(response.data.receipts);
-            setIsLoading(false);
-        }
-        catch (error){
-            console.error('Error fecthing receipts:', error);
-            setIsLoading(false);
-        }
-    };
-
     useEffect(() => {
-        if(user) { 
+        if(user) {
+            const fetchReceipts = async () => {
+                setIsLoading(true);
+                try {
+                    const response = await axios.get(`http://localhost:5000/get_receipts?user_id=${user.id}`);
+                    setReceipts(response.data.receipts);
+                    setIsLoading(false);
+                } catch (error) {
+                    console.error('Error fetching receipts:', error);
+                    setIsLoading(false);
+                }
+            };
+
             fetchReceipts();
         }
-       
     }, [user]);
 
 
