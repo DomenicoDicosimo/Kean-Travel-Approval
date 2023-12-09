@@ -430,7 +430,7 @@ def submit_travel_ethics_form():
     return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
 
 
-@main.route("/submit_expenses", methods=["POST"])
+@main.route("/submit-expenses", methods=["POST"])
 def submit_expenses():
     data = request.json
 
@@ -474,6 +474,50 @@ def submit_expenses():
     except SQLAlchemyError as e:
         # Log the exception here
         return jsonify({"error": "Database error"}), 500
+
+@main.route('/submit-approval', methods=['POST'])
+def submit_approval():
+    data = request.json
+    id = data['form_id']
+    form_type = data['form_type'] 
+    approver_id = data['approver_id']
+
+    # Determine which form model to use based on form_type
+    if form_type == 'student_travel':
+        form_model = StudentTravelRegistrationFormDay
+    elif form_type == 'travel_authorization':
+        form_model = TravelAuthorizationRequestForm
+    else:
+        return jsonify({"message": "Invalid form type"}), 400
+
+    # Retrieve the form and approver from the database
+    form = form_model.query.get(id)
+    approver = Approver.query.get(approver_id)
+
+    if not form:
+        return jsonify({"message": "Form not found"}), 404
+
+    # Check if the approver is authorized for the current level
+    if approver.LevelID != form.CurrentApprovalLevelID:
+        return jsonify({"message": "Approver not authorized for this level"}), 403
+
+    # Find the next level in the route
+    next_level = ApprovalRoute.query.filter_by(
+        RouteID=form.CurrentRouteID, 
+        ApprovalOrder=form.CurrentApprovalLevelID + 1
+    ).first()
+
+    # Update the form's approval level
+    if next_level:
+        form.CurrentApprovalLevelID = next_level.LevelID
+    else:
+        # No next level, approval process is complete
+        form.CurrentApprovalLevelID = None  
+
+    db.session.commit()
+
+    return jsonify({"message": "Approval submitted successfully"}), 200
+
 
 
 # Test Route
