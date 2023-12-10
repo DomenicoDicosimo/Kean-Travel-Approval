@@ -27,6 +27,7 @@ import {SignedIn, SignedOut, UserButton} from "@clerk/clerk-react";
 
 export default function NavBar() {
   const { isOpen, onToggle } = useDisclosure()
+ 
 
   return (
     <Box position="relative" top="0" w="100%">
@@ -282,12 +283,24 @@ const NAV_ITEMS: Array<NavItem> = [
     label: 'Group Travel',
     href: '/group-travel',
   },
+
   {
     label: 'Dashboard',
-    href: '/dashboard'
+    href: '/dashboard',
   },
+
+  {
+    label: 'Faculty Dashboard',
+    href: '/faculty-dashboard',
+  }, 
+
   {
     label: 'Database Test',
-    href: '/test-database'
-  }
-]
+    href: '/test-database',
+  },
+  {
+    label: 'Upload Receipts',
+    href: '/upload-receipts',
+  },
+];
+

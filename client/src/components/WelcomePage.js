@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import NavBar from './NavBar';
 import { Box, FormControl, FormLabel, Input, Button, VStack, Text, Select } from '@chakra-ui/react';
@@ -21,20 +21,7 @@ export default function WelcomePage() {
   const [zip, setZip] = useState('');
   const [role, setRole] = useState('');
 
-  useEffect(() => {
-    if (user) {
-      console.log(user);
-      setFirstName(user.firstName || '');
-      setLastName(user.lastName || '');
-      setEmail(user.emailAddresses[0]?.emailAddress || '');
-      setUserId(user.id || '');
-      setPassword('');
-
-      checkIfUserExists(user.id);
-    }
-  }, [user]);
-
-  const checkIfUserExists = async () => {
+  const checkIfUserExists = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:5000/check-user-exists?id=${user.id}`);
@@ -50,7 +37,19 @@ export default function WelcomePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user.id]);
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setEmail(user.emailAddresses[0]?.emailAddress || '');
+      setUserId(user.id || '');
+      setPassword('');
+
+      checkIfUserExists();
+    }
+  }, [user, checkIfUserExists]);
 
   const addUserToDatabase = async (e) => {
     e.preventDefault();

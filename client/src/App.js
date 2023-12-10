@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ClerkProvider, SignIn, SignUp, useUser } from '@clerk/clerk-react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { ClerkProvider, SignIn, SignUp, useUser } from '@clerk/clerk-react';
 import { ChakraProvider } from '@chakra-ui/react';
-import GroupTravel from './components/GroupTravel';
-import WelcomePage from './components/WelcomePage';
+
 import Dashboard from './components/Dashboard';
-import StudentTravelRegistrationFormDay from './components/StudentTravelRegistrationFormDay';
 import DisplayStudentTravelRegistrationFormDay from './components/DisplayStudentTravelRegistrationFormDay';
-import TravelAuthorizationRequestForm from './components/TravelAuthorizationRequestForm';
+import GroupTravel from './components/GroupTravel';
+import StudentTravelRegistrationFormDay from './components/StudentTravelRegistrationFormDay';
 import TestDatabase from './components/TestDatabase';
+import TravelAuthorizationRequestForm from './components/TravelAuthorizationRequestForm';
 import UploadReceipt from './components/UploadReceipt';
+import FacultyDashboard from './components/FacultyDashboard';
+import WelcomePage from './components/WelcomePage';
 
 if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
   throw new Error('Missing Clerk Publishable Key');
@@ -99,13 +101,16 @@ function App() {
                 path="/display-student-travel-registration-form-day"
                 element={
                   <DisplayStudentTravelRegistrationFormDay
+                    userEmail={'ibarrjou@kean.edu'}
+                    formId={13}
                     usingUniversityTransport={usingUniversityTransport}
                     isUnderage={isUnderage}
                   />
                 }
               />
               <Route path="/upload-receipts" element={<UploadReceipt />} />
-              <Route path="/dashboard/*" element={<Dashboard />}></Route>
+              <Route path="/dashboard" element={<Dashboard />}></Route>
+              <Route path="/faculty-dashboard" element={<FacultyDashboard />}></Route>
             </Routes>
           </BrowserRouter>
         </ChakraProvider>

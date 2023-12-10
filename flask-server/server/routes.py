@@ -5,40 +5,41 @@ This module contains the routes for the Flask server.
 import os
 import smtplib
 from datetime import datetime
-
 # from email import message
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from flask import Blueprint, jsonify, request
+from flask import send_from_directory
 from sqlalchemy.exc import SQLAlchemyError
-
 # New imports for uploading receipts
-# ******************************************
 from werkzeug.utils import secure_filename
 
 from . import db
 from .models import (
     StudentTravelRegistrationFormDay,
-    User,
     TravelAuthorizationRequestForm,
     TravelEthicsForm,
+    User,
+    Receipt,
+    Approver,
     Expenses,
     ApprovalRoute,
-    Approver,
-    Receipt,
 )
 
 main = Blueprint("main", __name__)
 
-# ***************IGNORE THIS PART FOR THE MOMENT - UPLOAD RECEIPT FUNCTIONALITY ***********#
-
-UPLOAD_FOLDER = "/uploaded_receipts"
+UPLOAD_FOLDER = "server/uploaded_receipts"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
 
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+# Create folder to store receipts if it doesnt exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 
 @main.route("/upload_receipt", methods=["POST"])
@@ -54,9 +55,24 @@ def upload_receipt():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+        file_path = os.path.normpath(file_path)
 
-        # Assuming the user ID is provided as part of the request
+        # If file already exists, then modify the name adding a counter
+        counter = 1
+        while os.path.exists(file_path):
+            name, ext = os.path.splitext(filename)
+            new_filename = f"{name}_{counter}{ext}"
+            file_path = os.path.join(UPLOAD_FOLDER, new_filename)
+            file_path = os.path.normpath(file_path)
+
+            counter += 1
+
+        try:
+            file.save(file_path)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+        # iser id from clerk, appended to formData
         user_id = request.form.get("user_id")
 
         new_receipt = Receipt(
@@ -76,7 +92,9 @@ def upload_receipt():
 @main.route("/get_receipts", methods=["GET"])
 def get_receipts():
     try:
-        receipts = Receipt.query.all()
+        current_user_id = request.args.get("user_id")
+        receipts = Receipt.query.filter_by(user_id=current_user_id).all()
+
         receipts_data = []
         for receipt in receipts:
             receipt_dict = {
@@ -90,12 +108,15 @@ def get_receipts():
             receipts_data.append(receipt_dict)
 
         # Return data as JSON
-        return jsonify({"receipts": "receipts_data"}), 200
+        return jsonify({"receipts": receipts_data}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-# **************************************************************************************************************
+@main.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory("uploaded_receipts", filename)
+
 
 email_sequence = {
     "current_step": 0,
@@ -108,33 +129,22 @@ email_sequence = {
 }
 
 
-# USERS
-@main.route("/users")
-def get_all_users():
-    """
-    Returns a JSON representation of all users in the database.
-    """
-
-    users = User.query.all()
-    return jsonify([u.to_dict() for u in users])
-
-
 @main.route("/add_user", methods=["POST"])
 def add_user():
     data = request.json
     user = User(
-        id=data["id"],
-        fName=data["firstName"],
-        lName=data["lastName"],
-        DOB=data["DOB"],
-        sex=data["sex"],
-        email=data["email"],
-        password=data["password"],
-        street=data["street"],
-        city=data["city"],
-        state=data["state"],
-        zip=data["zip"],
-        role=data["role"],
+        id=data.get("id"),
+        fName=data.get("firstName"),
+        lName=data.get("lastName"),
+        DOB=data.get("DOB"),
+        sex=data.get("sex"),
+        email=data.get("email"),
+        password=data.get("password"),
+        street=data.get("street"),
+        city=data.get("city"),
+        state=data.get("state"),
+        zip=data.get("zip"),
+        role=data.get("role"),
     )
 
     if User.query.filter_by(email=data["email"]).first():
@@ -143,6 +153,19 @@ def add_user():
     db.session.add(user)
     db.session.commit()
     return jsonify({"message": "User added successfully!"}), 200
+
+
+# get user role
+@main.route("/get-user-role", methods=["GET"])
+def get_user_role():
+    user_id = request.args.get("user_id")
+
+    user = User.query.filter_by(id=user_id).first()
+
+    if user:
+        return jsonify({"role": user.role}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
 
 
 # Route to add user from clerk if not in Users table
@@ -196,6 +219,12 @@ def get_all_student_forms():
     """
 
     forms = StudentTravelRegistrationFormDay().query.all()
+    return jsonify([f.to_dict() for f in forms])
+
+
+@main.route("/travel-authorization-forms")
+def get_all_travel_authorization_forms():
+    forms = TravelAuthorizationRequestForm().query.all()
     return jsonify([f.to_dict() for f in forms])
 
 
@@ -375,64 +404,64 @@ def submit_travel_ethics_form():
 
     Travel_Ethics_Form = TravelEthicsForm(
         UserID=user_id,
-        SubmissionDate=data["SubmissionDate"],
-        FormType=data["FormType"],
-        FundingSource=data["FundingSource"],
-        Name=data["Name"],
-        Address=data["Address"],
-        City=data["City"],
-        State=data["State"],
-        Zip=data["Zip"],
-        KeanID=data["KeanID"],
-        Title=data["Title"],
-        Location=data["Location"],
-        Email=data["Email"],
-        Extension=data["Extension"],
-        DepartureDate=data["DepartureDate"],
-        DepartureTime=data["DepartureTime"],
-        ReturnDate=data["ReturnDate"],
-        ReturnTime=data["ReturnTime"],
-        DestinationCity=data["DestinationCity"],
-        DestinationState=data["DestinationState"],
-        ConferenceName=data["ConferenceName"],
-        UniversityFunds=data["UniversityFunds"],
-        GrantFunds=data["GrantFunds"],
-        PersonalFunds=data["PersonalFunds"],
-        OtherEmployeesTraveling=data["OtherEmployeesTraveling"],
-        ReasonForTravel=data["ReasonForTravel"],
-        GrantFundedProjectName=data["GrantFundedProjectName"],
-        SourceOfFunding=data["SourceOfFunding"],
-        BudgetedInGrantProposal=data["BudgetedInGrantProposal"],
-        InitialGrantAmount=data["InitialGrantAmount"],
-        HowCoveredIfNotBudgeted=data["HowCoveredIfNotBudgeted"],
-        Department=data["Department"],
-        Division=data["Division"],
-        Telephone=data["Telephone"],
-        Fax=data["Fax"],
-        Event=data["Event"],
-        Sponsor=data["Sponsor"],
-        SponsorInterestedParty=data["SponsorInterestedParty"],
-        StateOfficialRole=data["StateOfficialRole"],
-        FederalGovernmentSponsor=data["FederalGovernmentSponsor"],
-        NonprofitSponsor=data["NonprofitSponsor"],
-        NonprofitMember=data["NonprofitMember"],
-        NonprofitContracts=data["NonprofitContracts"],
-        Dates=data["Dates"],
-        OvernightAccommodationsRequired=data["OvernightAccommodationsRequired"],
-        OutOfStateTravelRequired=data["OutOfStateTravelRequired"],
-        EstimatedTotalCosts=data["EstimatedTotalCosts"],
-        TransportationCost=data["TransportationCost"],
-        MealsCost=data["MealsCost"],
-        AccommodationsCost=data["AccommodationsCost"],
-        RegistrationFeesCost=data["RegistrationFeesCost"],
-        AgencyPaysCost=data["AgencyPaysCost"],
-        SponsorPaysCost=data["SponsorPaysCost"],
-        EmployeePaysCost=data["EmployeePaysCost"],
-        OtherPaysCost=data["OtherPaysCost"],
-        OtherPayerName=data["OtherPayerName"],
-        ReasonForAttendance=data["ReasonForAttendance"],
-        SponsorOffersHonorarium=data["SponsorOffersHonorarium"],
-        StatusID=data["StatusID"],
+        SubmissionDate=data.get("SubmissionDate"),
+        FormType=data.get("FormType"),
+        FundingSource=data.get("FundingSource"),
+        Name=data.get("Name"),
+        Address=data.get("Address"),
+        City=data.get("City"),
+        State=data.get("State"),
+        Zip=data.get("Zip"),
+        KeanID=data.get("KeanID"),
+        Title=data.get("Title"),
+        Location=data.get("Location"),
+        Email=data.get("Email"),
+        Extension=data.get("Extension"),
+        DepartureDate=data.get("DepartureDate"),
+        DepartureTime=data.get("DepartureTime"),
+        ReturnDate=data.get("ReturnDate"),
+        ReturnTime=data.get("ReturnTime"),
+        DestinationCity=data.get("DestinationCity"),
+        DestinationState=data.get("DestinationState"),
+        ConferenceName=data.get("ConferenceName"),
+        UniversityFunds=data.get("UniversityFunds"),
+        GrantFunds=data.get("GrantFunds"),
+        PersonalFunds=data.get("PersonalFunds"),
+        OtherEmployeesTraveling=data.get("OtherEmployeesTraveling"),
+        ReasonForTravel=data.get("ReasonForTravel"),
+        GrantFundedProjectName=data.get("GrantFundedProjectName"),
+        SourceOfFunding=data.get("SourceOfFunding"),
+        BudgetedInGrantProposal=data.get("BudgetedInGrantProposal"),
+        InitialGrantAmount=data.get("InitialGrantAmount"),
+        HowCoveredIfNotBudgeted=data.get("HowCoveredIfNotBudgeted"),
+        Department=data.get("Department"),
+        Division=data.get("Division"),
+        Telephone=data.get("Telephone"),
+        Fax=data.get("Fax"),
+        Event=data.get("Event"),
+        Sponsor=data.get("Sponsor"),
+        SponsorInterestedParty=data.get("SponsorInterestedParty"),
+        StateOfficialRole=data.get("StateOfficialRole"),
+        FederalGovernmentSponsor=data.get("FederalGovernmentSponsor"),
+        NonprofitSponsor=data.get("NonprofitSponsor"),
+        NonprofitMember=data.get("NonprofitMember"),
+        NonprofitContracts=data.get("NonprofitContracts"),
+        Dates=data.get("Dates"),
+        OvernightAccommodationsRequired=data.get("OvernightAccommodationsRequired"),
+        OutOfStateTravelRequired=data.get("OutOfStateTravelRequired"),
+        EstimatedTotalCosts=data.get("EstimatedTotalCosts"),
+        TransportationCost=data.get("TransportationCost"),
+        MealsCost=data.get("MealsCost"),
+        AccommodationsCost=data.get("AccommodationsCost"),
+        RegistrationFeesCost=data.get("RegistrationFeesCost"),
+        AgencyPaysCost=data.get("AgencyPaysCost"),
+        SponsorPaysCost=data.get("SponsorPaysCost"),
+        EmployeePaysCost=data.get("EmployeePaysCost"),
+        OtherPaysCost=data.get("OtherPaysCost"),
+        OtherPayerName=data.get("OtherPayerName"),
+        ReasonForAttendance=data.get("ReasonForAttendance"),
+        SponsorOffersHonorarium=data.get("SponsorOffersHonorarium"),
+        StatusID=data.get("StatusID"),
     )
 
     db.session.add(Travel_Ethics_Form)
