@@ -373,7 +373,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
                 />
               </FormControl>
               <FormControl flex={3} isRequired>
-                <FormLabel htmlFor="emergencyContactAdress">
+                <FormLabel htmlFor="emergencyContactAddress">
                   Emergency Contact Address (Include street, city and state)
                 </FormLabel>
                 <Input value={formData.form.emergency_contact_address} isReadOnly />

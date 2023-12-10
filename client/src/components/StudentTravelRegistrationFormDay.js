@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import NavBar from './NavBar';
 import {
   Box,
-  Input,
-  FormControl,
-  FormLabel,
   Button,
-  Flex,
-  Stack,
-  HStack,
   Checkbox,
   Collapse,
-  Text,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftAddon,
   Radio,
   RadioGroup,
-  InputLeftAddon,
-  InputGroup,
+  Select,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 
 export default function StudentTravelRegistrationFormDay() {
@@ -137,14 +138,19 @@ export default function StudentTravelRegistrationFormDay() {
                 {' '}
                 {/* Increased flex value for more space */}
                 <FormLabel htmlFor="event_name">Event Name</FormLabel>
-                <Input
-                  type="text"
+                <Select
                   id="event_name"
                   name="event_name"
                   placeholder="Event Name"
                   onChange={handleInputChange}
                   value={formData.event_name}
-                />
+                >
+                  <option value="Great Minds in STEM (GMiS)">Great Minds in STEM (GMiS)</option>
+                  <option value="National Conference on Undergraduate Research (NCUR)">
+                    National Conference on Undergraduate Research (NCUR)
+                  </option>
+                  <option value="Project Presentation">Project Presentation</option>
+                </Select>
               </FormControl>
 
               <FormControl isRequired flex="1">
@@ -205,6 +211,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="minimum_age_requirement"
                   name="minimum_age_requirement"
                   placeholder="Minimum Age Requirement"
+                  pattern="[0-9]{2}"
                   onChange={handleInputChange}
                   value={formData.minimum_age_requirement}
                 />
@@ -223,6 +230,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="first_name"
                   name="first_name"
                   placeholder="First Name"
+                  pattern="[a-zA-Z]+"
                   onChange={handleInputChange}
                   value={formData.first_name}
                 />
@@ -234,6 +242,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="last_name"
                   name="last_name"
                   placeholder="Last Name"
+                  pattern="[a-zA-Z]+"
                   onChange={handleInputChange}
                   value={formData.last_name}
                 />
@@ -259,7 +268,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="email"
                   name="email"
                   placeholder="Email"
-                  pattern="[a-z0-9._%+-]+@kean\.edu$"
+                  pattern="[a-z0-9]+@kean\.edu$"
                   onChange={handleInputChange}
                   value={formData.email}
                 />
@@ -320,6 +329,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="state"
                   name="state"
                   placeholder="State"
+                  pattern="[A-Z]{2}"
                   onChange={handleInputChange}
                   value={formData.state}
                 />
@@ -331,6 +341,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="zip"
                   name="zip"
                   placeholder="ZIP Code"
+                  pattern="[0-9]{5}"
                   onChange={handleInputChange}
                   value={formData.zip}
                 />
@@ -392,6 +403,8 @@ export default function StudentTravelRegistrationFormDay() {
                       type="text"
                       id="parent_name"
                       name="parent_name"
+                      placeholder="Parent/Guardian's Name"
+                      pattern="[a-zA-Z ]+"
                       onChange={handleInputChange}
                     />
                   </FormControl>
@@ -404,6 +417,8 @@ export default function StudentTravelRegistrationFormDay() {
                       type="text"
                       id="parent_signature"
                       name="parent_signature"
+                      placeholder="Parent/Guardian's Signature"
+                      pattern="[a-zA-Z ]+"
                       onChange={handleInputChange}
                     />
                   </FormControl>
@@ -568,6 +583,7 @@ export default function StudentTravelRegistrationFormDay() {
                         id="paidTicketPrice"
                         name="paidTicketPrice"
                         type="number"
+                        pattern="^[0-9]+(\.[0-9]{1,2})?$"
                         onChange={handleInputChange}
                         placeholder="Enter paid ticket price"
                       />
@@ -581,6 +597,7 @@ export default function StudentTravelRegistrationFormDay() {
                         id="otherActivityCosts"
                         name="otherActivityCosts"
                         type="number"
+                        pattern="^[0-9]+(\.[0-9]{1,2})?$"
                         onChange={handleInputChange}
                         placeholder="Enter other activity costs"
                       />
@@ -598,7 +615,7 @@ export default function StudentTravelRegistrationFormDay() {
                         name="totalFinancialObligation"
                         type="number"
                         value={formData.totalFinancialObligation}
-                        placeholder=""
+                        placeholder="Total"
                         readOnly
                       />
                     </InputGroup>
@@ -654,6 +671,8 @@ export default function StudentTravelRegistrationFormDay() {
                 <Input
                   id="emergencyContactName"
                   name="emergencyContactName"
+                  placeholder="Emergency Contact Name"
+                  pattern="[a-zA-Z ]+"
                   onChange={handleInputChange}
                 />
               </FormControl>
@@ -662,6 +681,8 @@ export default function StudentTravelRegistrationFormDay() {
                 <Input
                   id="relationToParticipant"
                   name="relationToParticipant"
+                  placeholder="Relationship to Participant"
+                  pattern="[a-zA-Z ]+"
                   onChange={handleInputChange}
                 />
               </FormControl>
@@ -682,12 +703,14 @@ export default function StudentTravelRegistrationFormDay() {
                 </InputGroup>
               </FormControl>
               <FormControl flex={3} isRequired>
-                <FormLabel htmlFor="emergencyContactAdress">
+                <FormLabel htmlFor="emergencyContactAddress">
                   Emergency Contact Address (Include street, city and state)
                 </FormLabel>
                 <Input
-                  id="emergencyContactAdress"
+                  id="emergencyContactAddress"
                   name="emergencyContactAddress"
+                  placeholder="123 Main St, City, ST"
+                  pattern="[a-zA-Z0-9 ]+,[a-zA-Z ]+,[A-Z]{2}"
                   onChange={handleInputChange}
                 />
               </FormControl>
