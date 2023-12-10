@@ -83,7 +83,7 @@ const DisplayForms = ({ formData }) => {
     return (
         <>
           <div ref={formRef}>
-            <Box p={4} spacing={4} bg="gray.100" w="70%" mx="auto" borderRadius="lg">
+            <Box p={4} spacing={4} bg="gray.100" w="60%" mx="auto" borderRadius="lg">
                 <Stack>
                     <FormControl>
                         <FormLabel>Student Travel Registration Form - Day Trip (Student)</FormLabel>
