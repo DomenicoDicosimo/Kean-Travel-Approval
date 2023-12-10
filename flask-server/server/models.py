@@ -348,6 +348,10 @@ class StudentTravelRegistrationFormDay(db.Model):
     CurrentRouteID = db.Column(db.Integer, nullable=True)
     CurrentApprovalLevelID = db.Column(db.Integer, nullable=True)
 
+    # Time Test
+    deptime = db.Column(db.Time)
+    arrtime = db.Column(db.Time)
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -386,6 +390,8 @@ class StudentTravelRegistrationFormDay(db.Model):
             "participant_certification": self.participant_certification,
             "CurrentRouteID": self.CurrentRouteID,
             "CurrentApprovalLevel": self.CurrentApprovalLevelID,
+            "deptime": str(self.deptime),
+            "arrtime": str(self.arrtime),
         }
 
     def __repr__(self):

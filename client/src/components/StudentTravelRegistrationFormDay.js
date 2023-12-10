@@ -71,6 +71,9 @@ export default function StudentTravelRegistrationFormDay() {
     relationToParticipant: '',
     emergencyContactPhone: '',
     emergencyContactAddress: '',
+
+    deptime: '',
+    arrtime: '',
   });
 
   const handleTransportationChange = (value) => {
@@ -171,6 +174,7 @@ export default function StudentTravelRegistrationFormDay() {
                   type="date"
                   id="event_date"
                   name="event_date"
+                  min={new Date().toISOString().split('T')[0]} // Today's date
                   onChange={handleInputChange}
                   value={formData.event_date}
                 />
@@ -224,6 +228,31 @@ export default function StudentTravelRegistrationFormDay() {
                   pattern="[0-9]{1,2}"
                   onChange={handleInputChange}
                   value={formData.minimum_age_requirement}
+                />
+              </FormControl>
+            </HStack>
+
+            <HStack spacing={4}>
+              <FormControl isRequired>
+                <FormLabel htmlFor="deptime">(TEST)Departure Time</FormLabel>
+                <Input
+                  type="time"
+                  id="deptime"
+                  name="deptime"
+                  placeholder="Departure Time"
+                  onChange={handleInputChange}
+                  value={formData.deptime}
+                />
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel htmlFor="arrtime">(TEST)Approximate Return Time</FormLabel>
+                <Input
+                  type="time"
+                  id="arrtime"
+                  name="arrtime"
+                  placeholder="Approximate Return Time"
+                  onChange={handleInputChange}
+                  value={formData.arrtime}
                 />
               </FormControl>
             </HStack>
