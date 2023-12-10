@@ -71,9 +71,6 @@ export default function StudentTravelRegistrationFormDay() {
     relationToParticipant: '',
     emergencyContactPhone: '',
     emergencyContactAddress: '',
-
-    deptime: '',
-    arrtime: '',
   });
 
   const handleTransportationChange = (value) => {
@@ -87,6 +84,11 @@ export default function StudentTravelRegistrationFormDay() {
 
   const toggleDetail = (section) => {
     setShowDetails((prevDetails) => ({ ...prevDetails, [section]: !prevDetails[section] }));
+  };
+
+  const subtractYears = (date, years) => {
+    date.setFullYear(date.getFullYear() - years);
+    return date;
   };
 
   const handleInputChange = (e) => {
@@ -199,7 +201,7 @@ export default function StudentTravelRegistrationFormDay() {
               <FormControl isRequired>
                 <FormLabel htmlFor="departure_time">Departure Time</FormLabel>
                 <Input
-                  type="datetime-local"
+                  type="time"
                   id="departure_time"
                   name="departure_time"
                   placeholder="Departure Time"
@@ -210,7 +212,7 @@ export default function StudentTravelRegistrationFormDay() {
               <FormControl isRequired>
                 <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
                 <Input
-                  type="datetime-local"
+                  type="time"
                   id="approximate_return_time"
                   name="approximate_return_time"
                   placeholder="Approximate Return Time"
@@ -232,31 +234,6 @@ export default function StudentTravelRegistrationFormDay() {
               </FormControl>
             </HStack>
 
-            <HStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel htmlFor="deptime">(TEST)Departure Time</FormLabel>
-                <Input
-                  type="time"
-                  id="deptime"
-                  name="deptime"
-                  placeholder="Departure Time"
-                  onChange={handleInputChange}
-                  value={formData.deptime}
-                />
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel htmlFor="arrtime">(TEST)Approximate Return Time</FormLabel>
-                <Input
-                  type="time"
-                  id="arrtime"
-                  name="arrtime"
-                  placeholder="Approximate Return Time"
-                  onChange={handleInputChange}
-                  value={formData.arrtime}
-                />
-              </FormControl>
-            </HStack>
-
             {/* Participant Information (Student) - Section 1 */}
             <FormLabel htmlFor="first_name" style={{ color: 'blue' }}>
               1. PARTICIPANT INFORMATION (STUDENT)
@@ -269,7 +246,6 @@ export default function StudentTravelRegistrationFormDay() {
                   id="first_name"
                   name="first_name"
                   placeholder="First Name"
-                  // pattern="[a-zA-Z '-]+"
                   pattern="[a-zA-Z '\-]+"
                   onChange={handleInputChange}
                   value={formData.first_name}
@@ -335,6 +311,11 @@ export default function StudentTravelRegistrationFormDay() {
                   id="date_of_birth"
                   name="date_of_birth"
                   onChange={handleInputChange}
+                  max={
+                    subtractYears(new Date(), formData.minimum_age_requirement)
+                      .toISOString()
+                      .split('T')[0]
+                  } // Constraint: Minimum age requirement
                   value={formData.date_of_birth}
                 />
               </FormControl>

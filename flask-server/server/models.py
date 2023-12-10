@@ -311,8 +311,8 @@ class StudentTravelRegistrationFormDay(db.Model):
     event_name = db.Column(db.String(255))
     event_date = db.Column(db.Date)
     host_organization = db.Column(db.String(255))
-    departure_time = db.Column(db.DateTime)  # TODO - Change to Time
-    approximate_return_time = db.Column(db.DateTime)  # TODO - Change to Time
+    departure_time = db.Column(db.Time)
+    approximate_return_time = db.Column(db.Time)
     minimum_age_requirement = db.Column(db.Integer)
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
@@ -347,10 +347,6 @@ class StudentTravelRegistrationFormDay(db.Model):
     # Approval Fields
     CurrentRouteID = db.Column(db.Integer, nullable=True)
     CurrentApprovalLevelID = db.Column(db.Integer, nullable=True)
-
-    # Time Test
-    deptime = db.Column(db.Time)
-    arrtime = db.Column(db.Time)
 
     def to_dict(self):
         return {
@@ -390,8 +386,6 @@ class StudentTravelRegistrationFormDay(db.Model):
             "participant_certification": self.participant_certification,
             "CurrentRouteID": self.CurrentRouteID,
             "CurrentApprovalLevel": self.CurrentApprovalLevelID,
-            "deptime": str(self.deptime),
-            "arrtime": str(self.arrtime),
         }
 
     def __repr__(self):

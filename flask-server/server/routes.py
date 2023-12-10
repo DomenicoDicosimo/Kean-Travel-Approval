@@ -267,9 +267,6 @@ def submit_student_travel_registration_form_day():
         agree_to_ferpa=data.get("agreeToFerpa"),
         financial_obligation=data.get("financialObligation"),
         participant_certification=data.get("participantCertification"),
-        # Time Test
-        deptime=data.get("deptime"),
-        arrtime=data.get("arrtime"),
     )
     """ date_assigned=date.today(), """
 
