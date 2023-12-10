@@ -11,6 +11,7 @@ import StudentTravelRegistrationFormDay from './components/StudentTravelRegistra
 import TestDatabase from './components/TestDatabase';
 import TravelAuthorizationRequestForm from './components/TravelAuthorizationRequestForm';
 import UploadReceipt from './components/UploadReceipt';
+import FacultyDashboard from './components/FacultyDashboard';
 import WelcomePage from './components/WelcomePage';
 
 if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
@@ -100,13 +101,16 @@ function App() {
                 path="/display-student-travel-registration-form-day"
                 element={
                   <DisplayStudentTravelRegistrationFormDay
+                    userEmail={'ibarrjou@kean.edu'}
+                    formId={13}
                     usingUniversityTransport={usingUniversityTransport}
                     isUnderage={isUnderage}
                   />
                 }
               />
               <Route path="/upload-receipts" element={<UploadReceipt />} />
-              <Route path="/dashboard/*" element={<Dashboard />}></Route>
+              <Route path="/dashboard" element={<Dashboard />}></Route>
+              <Route path="/faculty-dashboard" element={<FacultyDashboard />}></Route>
             </Routes>
           </BrowserRouter>
         </ChakraProvider>
