@@ -311,8 +311,8 @@ class StudentTravelRegistrationFormDay(db.Model):
     event_name = db.Column(db.String(255))
     event_date = db.Column(db.Date)
     host_organization = db.Column(db.String(255))
-    departure_time = db.Column(db.DateTime)  # TODO - Change to Time
-    approximate_return_time = db.Column(db.DateTime)  # TODO - Change to Time
+    departure_time = db.Column(db.Time)
+    approximate_return_time = db.Column(db.Time)
     minimum_age_requirement = db.Column(db.Integer)
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))

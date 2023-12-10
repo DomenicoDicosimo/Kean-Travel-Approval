@@ -52,24 +52,22 @@ export default function DisplayStudentTravelRegistrationFormDay({
     return <div>Loading...</div>;
   }
 
-  // FIXME formatDate is a day ahead
   function formatDate(date) {
     const dateObj = new Date(date);
     const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const day = dateObj.getDate().toString().padStart(2, '0');
+    const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
     const year = dateObj.getFullYear();
     return `${month}/${day}/${year}`;
   }
 
-  function formatDateTime(dateTime) {
-    const timeObj = new Date(dateTime);
-    let hours = timeObj.getHours().toString().padStart(2, '0');
-    let minutes = timeObj.getMinutes().toString().padStart(2, '0');
+  function formatTime(time) {
+    const [hoursInput, minutes] = time.split(':');
+    let hours = parseInt(hoursInput, 10);
 
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
-    hours = hours ? hours : 12;
-    return `${formatDate(dateTime)} ${hours}:${minutes} ${ampm}`;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
   }
 
   function formatPhoneNumber(phoneNumber) {
@@ -151,11 +149,11 @@ export default function DisplayStudentTravelRegistrationFormDay({
             <HStack spacing={4}>
               <FormControl>
                 <FormLabel htmlFor="departure_time">Departure Time</FormLabel>
-                <Input value={formatDateTime(formData.form.departure_time) || ''} isReadOnly />
+                <Input value={formatTime(formData.form.departure_time) || ''} isReadOnly />
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
-                <Input value={formatDateTime(formData.form.approximate_return_time) || ''} isReadOnly />
+                <Input value={formatTime(formData.form.approximate_return_time) || ''} isReadOnly />
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="minimum_age_requirement">Minimum Age Requirement</FormLabel>
@@ -238,7 +236,10 @@ export default function DisplayStudentTravelRegistrationFormDay({
                   </FormControl>
                   <FormControl>
                     <FormLabel htmlFor="parent_signature_date">Date</FormLabel>
-                    <Input value={formatDate(formData.form.parent_signature_date) || ''} isReadOnly />
+                    <Input
+                      value={formatDate(formData.form.parent_signature_date) || ''}
+                      isReadOnly
+                    />
                   </FormControl>
                 </HStack>
                 <FormControl>
@@ -267,6 +268,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
             <FormControl>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               {/* FIXME Coming in backwards */}
+              <Text>{usingUniversityTransport}</Text>
               <RadioGroup defaultValue={!usingUniversityTransport ? 'yes' : 'no'}>
                 <Stack direction="row">
                   <Radio value="yes" isReadOnly>
@@ -282,7 +284,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <FormControl display="flex" alignItems="center">
                 <Checkbox
                   name="transportationWaiver"
-                  isChecked={formData.form.transportationWaiver || ''}
+                  defaultChecked={formData.form.transportationWaiver || ''}
                   isReadOnly
                 >
                   I agree to the Transportation Waiver
