@@ -1,25 +1,26 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from './NavBar';
+import axios from 'axios';
 import { useUser, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
 import {
   Box,
+  Badge,
   Card,
   CardBody,
   CardHeader,
+  Divider,
   Grid,
   GridItem,
   Heading,
+  HStack,
   Stack,
   StackDivider,
   Text,
-  Divider,
-  Badge,
-  HStack,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import axios from 'axios';
+
+import NavBar from './NavBar';
 
 export default function Dashboard() {
   const { user } = useUser();

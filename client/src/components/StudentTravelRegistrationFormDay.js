@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import NavBar from './NavBar';
 import {
   Box,
   Button,
@@ -18,6 +17,8 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
+
+import NavBar from './NavBar';
 
 export default function StudentTravelRegistrationFormDay() {
   const [showDetails, setShowDetails] = useState({
@@ -122,7 +123,6 @@ export default function StudentTravelRegistrationFormDay() {
     console.log(data);
   };
 
-  // TODO - Add form validation
   return (
     <>
       <NavBar />
@@ -583,6 +583,7 @@ export default function StudentTravelRegistrationFormDay() {
                         id="paidTicketPrice"
                         name="paidTicketPrice"
                         type="number"
+                        step="0.01"
                         pattern="^[0-9]+(\.[0-9]{1,2})?$"
                         onChange={handleInputChange}
                         placeholder="Enter paid ticket price"
@@ -710,7 +711,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="emergencyContactAddress"
                   name="emergencyContactAddress"
                   placeholder="123 Main St, City, ST"
-                  pattern="[a-zA-Z0-9 ]+,[a-zA-Z ]+,[A-Z]{2}"
+                  pattern="[a-zA-Z0-9 ]+,\s*[a-zA-Z ]+,\s*[A-Z]{2}"
                   onChange={handleInputChange}
                 />
               </FormControl>

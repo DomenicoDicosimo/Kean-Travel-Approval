@@ -1,25 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import NavBar from './NavBar';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   FormLabel,
-  Stack,
   HStack,
-  Text,
-  Checkbox,
-  Radio,
-  RadioGroup,
   Input,
   InputGroup,
   InputLeftAddon,
+  Radio,
+  RadioGroup,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
+
+import NavBar from './NavBar';
 
 export default function DisplayStudentTravelRegistrationFormDay({
   usingUniversityTransport,
