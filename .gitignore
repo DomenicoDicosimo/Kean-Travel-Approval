@@ -33,3 +33,5 @@ __pycache__
 
 venv/
 .idea
+
+flask-server/server/uploaded_receipts/
