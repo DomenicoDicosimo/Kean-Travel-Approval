@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-
+import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import NavBar from './NavBar';
 import axios from 'axios';
@@ -22,14 +22,14 @@ import {
 } from '@chakra-ui/react';
 
 export default function DisplayStudentTravelRegistrationFormDay({
-  userEmail,
-  formId,
   usingUniversityTransport,
   isUnderage,
 }) {
   const formRef = useRef();
 
- 
+  const query = new URLSearchParams(useLocation().search);
+  const formId = query.get('formId');
+  const userEmail = query.get('email');
 
   const [formData, setFormData] = useState(null);
   DisplayStudentTravelRegistrationFormDay.propTypes = {

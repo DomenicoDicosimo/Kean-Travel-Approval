@@ -101,8 +101,6 @@ function App() {
                 path="/display-student-travel-registration-form-day"
                 element={
                   <DisplayStudentTravelRegistrationFormDay
-                    userEmail={'ibarrjou@kean.edu'}
-                    formId={13}
                     usingUniversityTransport={usingUniversityTransport}
                     isUnderage={isUnderage}
                   />
