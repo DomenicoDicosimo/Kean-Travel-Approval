@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -21,6 +22,8 @@ import {
 import NavBar from './NavBar';
 
 export default function StudentTravelRegistrationFormDay() {
+  const navigate = useNavigate();
+
   const [showDetails, setShowDetails] = useState({
     section2: false,
     section3: false,
@@ -72,6 +75,7 @@ export default function StudentTravelRegistrationFormDay() {
 
   const handleTransportationChange = (value) => {
     setUsingUniversityTransport(value);
+    console.log(usingUniversityTransport);
   };
 
   const handleFinancialObligationChange = (value) => {
@@ -80,6 +84,11 @@ export default function StudentTravelRegistrationFormDay() {
 
   const toggleDetail = (section) => {
     setShowDetails((prevDetails) => ({ ...prevDetails, [section]: !prevDetails[section] }));
+  };
+
+  const subtractYears = (date, years) => {
+    date.setFullYear(date.getFullYear() - years);
+    return date;
   };
 
   const handleInputChange = (e) => {
@@ -120,7 +129,13 @@ export default function StudentTravelRegistrationFormDay() {
       }
     );
     const data = await response.json();
+    console.log(`%c${usingUniversityTransport}`, 'color: green; font-weight: bold;');
     console.log(data);
+    if (response.ok) {
+      navigate('/dashboard');
+    } else {
+      console.error('Error submitting student travel registration form.');
+    }
   };
 
   return (
@@ -161,6 +176,7 @@ export default function StudentTravelRegistrationFormDay() {
                   type="date"
                   id="event_date"
                   name="event_date"
+                  min={new Date().toISOString().split('T')[0]} // Today's date
                   onChange={handleInputChange}
                   value={formData.event_date}
                 />
@@ -185,7 +201,7 @@ export default function StudentTravelRegistrationFormDay() {
               <FormControl isRequired>
                 <FormLabel htmlFor="departure_time">Departure Time</FormLabel>
                 <Input
-                  type="datetime-local"
+                  type="time"
                   id="departure_time"
                   name="departure_time"
                   placeholder="Departure Time"
@@ -196,7 +212,7 @@ export default function StudentTravelRegistrationFormDay() {
               <FormControl isRequired>
                 <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
                 <Input
-                  type="datetime-local"
+                  type="time"
                   id="approximate_return_time"
                   name="approximate_return_time"
                   placeholder="Approximate Return Time"
@@ -211,7 +227,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="minimum_age_requirement"
                   name="minimum_age_requirement"
                   placeholder="Minimum Age Requirement"
-                  pattern="[0-9]{2}"
+                  pattern="[0-9]{1,2}"
                   onChange={handleInputChange}
                   value={formData.minimum_age_requirement}
                 />
@@ -230,7 +246,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="first_name"
                   name="first_name"
                   placeholder="First Name"
-                  pattern="[a-zA-Z]+"
+                  pattern="[a-zA-Z '\-]+"
                   onChange={handleInputChange}
                   value={formData.first_name}
                 />
@@ -242,7 +258,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="last_name"
                   name="last_name"
                   placeholder="Last Name"
-                  pattern="[a-zA-Z]+"
+                  pattern="[a-zA-Z '\-]+"
                   onChange={handleInputChange}
                   value={formData.last_name}
                 />
@@ -295,6 +311,11 @@ export default function StudentTravelRegistrationFormDay() {
                   id="date_of_birth"
                   name="date_of_birth"
                   onChange={handleInputChange}
+                  max={
+                    subtractYears(new Date(), formData.minimum_age_requirement)
+                      .toISOString()
+                      .split('T')[0]
+                  } // Constraint: Minimum age requirement
                   value={formData.date_of_birth}
                 />
               </FormControl>
@@ -331,7 +352,7 @@ export default function StudentTravelRegistrationFormDay() {
                   placeholder="State"
                   pattern="[A-Z]{2}"
                   onChange={handleInputChange}
-                  value={formData.state}
+                  value={formData.state.toUpperCase()}
                 />
               </FormControl>
               <FormControl isRequired>
@@ -404,7 +425,7 @@ export default function StudentTravelRegistrationFormDay() {
                       id="parent_name"
                       name="parent_name"
                       placeholder="Parent/Guardian's Name"
-                      pattern="[a-zA-Z ]+"
+                      pattern="[a-zA-Z '\-]+"
                       onChange={handleInputChange}
                     />
                   </FormControl>
@@ -418,7 +439,7 @@ export default function StudentTravelRegistrationFormDay() {
                       id="parent_signature"
                       name="parent_signature"
                       placeholder="Parent/Guardian's Signature"
-                      pattern="[a-zA-Z ]+"
+                      pattern="[a-zA-Z '\-]+"
                       onChange={handleInputChange}
                     />
                   </FormControl>
@@ -498,6 +519,7 @@ export default function StudentTravelRegistrationFormDay() {
             <FormControl isRequired>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               <RadioGroup onChange={handleTransportationChange} value={usingUniversityTransport}>
+                <Text>{usingUniversityTransport}</Text>
                 <Stack direction="row">
                   <Radio value="yes">Yes</Radio>
                   <Radio value="no">No</Radio>
@@ -673,7 +695,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="emergencyContactName"
                   name="emergencyContactName"
                   placeholder="Emergency Contact Name"
-                  pattern="[a-zA-Z ]+"
+                  pattern="[a-zA-Z '\-]+"
                   onChange={handleInputChange}
                 />
               </FormControl>
@@ -683,7 +705,7 @@ export default function StudentTravelRegistrationFormDay() {
                   id="relationToParticipant"
                   name="relationToParticipant"
                   placeholder="Relationship to Participant"
-                  pattern="[a-zA-Z ]+"
+                  pattern="[a-zA-Z '\-]+"
                   onChange={handleInputChange}
                 />
               </FormControl>

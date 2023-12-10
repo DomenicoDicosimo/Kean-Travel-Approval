@@ -4,33 +4,29 @@ This module contains the routes for the Flask server.
 
 import os
 import smtplib
-from datetime import date, datetime
+from datetime import datetime
 
 # from email import message
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_from_directory
 from sqlalchemy.exc import SQLAlchemyError
 
 # New imports for uploading receipts
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
 
 from . import db
 from .models import (
+    ApprovalRoute,
+    Approver,
     Expenses,
+    Receipt,
     StudentTravelRegistrationFormDay,
     TravelAuthorizationRequestForm,
     TravelEthicsForm,
     User,
-    Receipt,
-    Approver,
-    Expenses,
-    ApprovalRoute,
-   
 )
-
 
 main = Blueprint("main", __name__)
 
@@ -41,9 +37,11 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 # Create folder to store receipts if it doesnt exist
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
 
 @main.route("/upload_receipt", methods=["POST"])
 def upload_receipt():
@@ -59,30 +57,27 @@ def upload_receipt():
         filename = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         file_path = os.path.normpath(file_path)
- 
-        #If file already exists, then modify the name adding a counter
+
+        # If file already exists, then modify the name adding a counter
         counter = 1
         while os.path.exists(file_path):
             name, ext = os.path.splitext(filename)
             new_filename = f"{name}_{counter}{ext}"
             file_path = os.path.join(UPLOAD_FOLDER, new_filename)
             file_path = os.path.normpath(file_path)
-        
+
             counter += 1
-        
-        
+
         try:
             file.save(file_path)
         except Exception as e:
-          return jsonify({"error": str(e)}), 500
+            return jsonify({"error": str(e)}), 500
 
         # iser id from clerk, appended to formData
         user_id = request.form.get("user_id")
 
         new_receipt = Receipt(
-            user_id=user_id, 
-            file_path=file_path, 
-            upload_date=datetime.utcnow()
+            user_id=user_id, file_path=file_path, upload_date=datetime.utcnow()
         )
         db.session.add(new_receipt)
         db.session.commit()
@@ -98,7 +93,6 @@ def upload_receipt():
 @main.route("/get_receipts", methods=["GET"])
 def get_receipts():
     try:
-        
         current_user_id = request.args.get("user_id")
         receipts = Receipt.query.filter_by(user_id=current_user_id).all()
 
@@ -119,9 +113,11 @@ def get_receipts():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @main.route("/uploads/<filename>")
 def uploaded_file(filename):
-    return send_from_directory('uploaded_receipts', filename)
+    return send_from_directory("uploaded_receipts", filename)
+
 
 email_sequence = {
     "current_step": 0,
@@ -159,18 +155,19 @@ def add_user():
     db.session.commit()
     return jsonify({"message": "User added successfully!"}), 200
 
+
 # get user role
-@main.route('/get-user-role', methods=['GET'])
+@main.route("/get-user-role", methods=["GET"])
 def get_user_role():
-    user_id = request.args.get('user_id') 
+    user_id = request.args.get("user_id")
 
     user = User.query.filter_by(id=user_id).first()
-    
+
     if user:
-        return jsonify({'role': user.role}), 200
+        return jsonify({"role": user.role}), 200
     else:
-        return jsonify({'error': 'User not found'}), 404
-    
+        return jsonify({"error": "User not found"}), 404
+
 
 # Route to add user from clerk if not in Users table
 @main.route("/check-user-exists", methods=["GET"])
@@ -200,7 +197,7 @@ def get_user_submitted_forms():
 @main.route("/get-user-submitted-forms/<int:form_id>", methods=["GET"])
 def get_user_submitted_form(form_id):
     """
-    Example call: http://127.0.0.1:5000/get-user-submitted-forms/form_id?email=user@example.com
+    Example call: http://127.0.0.1:5000/get-user-submitted-forms/10?email=user@example.com
     """
     target_email = request.args.get("email")
     form = (
@@ -224,6 +221,7 @@ def get_all_student_forms():
 
     forms = StudentTravelRegistrationFormDay().query.all()
     return jsonify([f.to_dict() for f in forms])
+
 
 @main.route("/travel-authorization-forms")
 def get_all_travel_authorization_forms():
@@ -272,11 +270,19 @@ def submit_student_travel_registration_form_day():
     )
     """ date_assigned=date.today(), """
 
-    if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
+    if StudentTravelRegistrationFormDay.query.filter_by(
+        email=data["email"], event_name=data["event_name"]
+    ).first():
         return (
             jsonify({"message": "User already submitted form. Wait for approval."}),
             200,
         )
+    
+    # Set Route based on the value of financialObligation in data
+    is_grant_funded = data.get("financialObligation", False)  # default to non-grant
+    current_route_id = 1 if is_grant_funded else 2
+    student_registration_day.CurrentRouteID = current_route_id
+    student_registration_day.CurrentApprovalLevelID = 1 
 
     db.session.add(student_registration_day)
     db.session.commit()
@@ -381,8 +387,6 @@ def submit_student_travel_authorization_request_form():
     db.session.commit()
 
     return jsonify({"message": "Form submitted successfully"}), 200
-
-
 
 
 @main.route("/travel_ethics_form")
