@@ -12,17 +12,45 @@ const DisplayForms = ({ formData }) => {
         return <div>Loading...</div>;
     }
 
-    const downloadPDF = () => {
-        html2canvas(formRef.current, { scale: 2 }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({ orientation: 'portrait' });
-            const imgProps= pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('form.pdf');
+    function downloadPDF() {
+        html2canvas(formRef.current, { scale: 3 }).then((canvas) => {
+          const imgData = canvas.toDataURL('image/jpeg', 1.0);
+          const pdf = new jsPDF('p', 'pt', 'a4');
+    
+          // Define the padding for top and bottom (in points)
+          const paddingTopBottom = 20; // Adjust this value as needed
+    
+          // Get the aspect ratio of the canvas
+          const canvasAspectRatio = canvas.height / canvas.width;
+    
+          // Get the dimensions of the PDF page
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight() - 2 * paddingTopBottom; // Subtract padding from total height
+    
+          // Calculate the dimensions of the image in the PDF
+          let imgWidthInPdf, imgHeightInPdf;
+    
+          // Check if the image fits better to the width or height of the PDF
+          if (pdfWidth / pdfHeight < canvasAspectRatio) {
+            // Fit to height
+            imgHeightInPdf = pdfHeight;
+            imgWidthInPdf = imgHeightInPdf / canvasAspectRatio;
+          } else {
+            // Fit to width
+            imgWidthInPdf = pdfWidth;
+            imgHeightInPdf = imgWidthInPdf * canvasAspectRatio;
+          }
+    
+          // Center the image horizontally and add padding vertically
+          const x = (pdfWidth - imgWidthInPdf) / 2;
+          const y = paddingTopBottom + (pdfHeight - imgHeightInPdf) / 2;
+    
+          pdf.addImage(imgData, 'JPEG', x, y, imgWidthInPdf, imgHeightInPdf);
+          pdf.save(
+            `${formData.first_name}${formData.last_name}-${formData.event_name}.pdf`
+          );
         });
-    };
+      }
 
     function formatDate(date) {
         const dateObj = new Date(date);
@@ -55,7 +83,7 @@ const DisplayForms = ({ formData }) => {
     return (
         <>
           <div ref={formRef}>
-            <Box p={4} spacing={4} bg="gray.100" w="90%" mx="auto" borderRadius="lg">
+            <Box p={4} spacing={4} bg="gray.100" w="70%" mx="auto" borderRadius="lg">
                 <Stack>
                     <FormControl>
                         <FormLabel>Student Travel Registration Form - Day Trip (Student)</FormLabel>
@@ -316,6 +344,12 @@ DisplayForms.propTypes = {
       parent_signature_date: PropTypes.string,
       parent_contact_number: PropTypes.string,
       isUnderage: PropTypes.bool,
+      form: PropTypes.shape({
+        first_name: PropTypes.string,
+        last_name: PropTypes.string,
+        event_name: PropTypes.string,
+      }),
+     
   })
 };
 

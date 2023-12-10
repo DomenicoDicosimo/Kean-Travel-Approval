@@ -8,17 +8,17 @@ import { jsPDF } from 'jspdf';
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   FormLabel,
-  Stack,
   HStack,
-  Text,
-  Checkbox,
-  Radio,
-  RadioGroup,
   Input,
   InputGroup,
   InputLeftAddon,
+  Radio,
+  RadioGroup,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 
 export default function DisplayStudentTravelRegistrationFormDay({
@@ -81,14 +81,44 @@ export default function DisplayStudentTravelRegistrationFormDay({
     return null;
   }
 
+  // FIXME improve resolution
   function downloadPDF() {
-    html2canvas(formRef.current).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
+    html2canvas(formRef.current, { scale: 3 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
       const pdf = new jsPDF('p', 'pt', 'a4');
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
-      pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
-      pdf.save('download.pdf');
+
+      // Define the padding for top and bottom (in points)
+      const paddingTopBottom = 20; // Adjust this value as needed
+
+      // Get the aspect ratio of the canvas
+      const canvasAspectRatio = canvas.height / canvas.width;
+
+      // Get the dimensions of the PDF page
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight() - 2 * paddingTopBottom; // Subtract padding from total height
+
+      // Calculate the dimensions of the image in the PDF
+      let imgWidthInPdf, imgHeightInPdf;
+
+      // Check if the image fits better to the width or height of the PDF
+      if (pdfWidth / pdfHeight < canvasAspectRatio) {
+        // Fit to height
+        imgHeightInPdf = pdfHeight;
+        imgWidthInPdf = imgHeightInPdf / canvasAspectRatio;
+      } else {
+        // Fit to width
+        imgWidthInPdf = pdfWidth;
+        imgHeightInPdf = imgWidthInPdf * canvasAspectRatio;
+      }
+
+      // Center the image horizontally and add padding vertically
+      const x = (pdfWidth - imgWidthInPdf) / 2;
+      const y = paddingTopBottom + (pdfHeight - imgHeightInPdf) / 2;
+
+      pdf.addImage(imgData, 'JPEG', x, y, imgWidthInPdf, imgHeightInPdf);
+      pdf.save(
+        `${formData.form.first_name}${formData.form.last_name}-${formData.form.event_name}.pdf`
+      );
     });
   }
 
@@ -343,7 +373,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
                 />
               </FormControl>
               <FormControl flex={3} isRequired>
-                <FormLabel htmlFor="emergencyContactAdress">
+                <FormLabel htmlFor="emergencyContactAddress">
                   Emergency Contact Address (Include street, city and state)
                 </FormLabel>
                 <Input value={formData.form.emergency_contact_address || ''} isReadOnly />
