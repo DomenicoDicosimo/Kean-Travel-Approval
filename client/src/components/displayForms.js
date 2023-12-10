@@ -1,21 +1,61 @@
-import React from 'react';
-import { Box, FormControl, FormLabel, Input, Checkbox, Stack, HStack, RadioGroup, Radio, Text, InputGroup, InputLeftAddon } from '@chakra-ui/react';
-
+import React, { useRef } from 'react';
+import { Box, FormControl, FormLabel, Input, Checkbox, Stack, Button, HStack, RadioGroup, Radio, Text, InputGroup, InputLeftAddon } from '@chakra-ui/react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import PropTypes from 'prop-types';
 
+
 const DisplayForms = ({ formData }) => {
+    const formRef = useRef();
+
     if (!formData) {
         return <div>Loading...</div>;
     }
 
-    const formatDate = (date) => new Date(date).toLocaleDateString();
-    const formatDateTime = (dateTime) => new Date(dateTime).toLocaleString();
-    const formatPhoneNumber = (phoneNumber) => phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    const downloadPDF = () => {
+        html2canvas(formRef.current, { scale: 2 }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({ orientation: 'portrait' });
+            const imgProps= pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('form.pdf');
+        });
+    };
+
+    function formatDate(date) {
+        const dateObj = new Date(date);
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const day = dateObj.getDate().toString().padStart(2, '0');
+        const year = dateObj.getFullYear();
+        return `${month}/${day}/${year}`;
+    }
+
+    function formatDateTime(dateTime) {
+        const timeObj = new Date(dateTime);
+        let hours = timeObj.getHours().toString().padStart(2, '0');
+        let minutes = timeObj.getMinutes().toString().padStart(2, '0');
+    
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${formatDate(dateTime)} ${hours}:${minutes} ${ampm}`;
+    }
+    
+    function formatPhoneNumber(phoneNumber) {
+        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+          return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+        }
+        return null;
+    }
 
     return (
         <>
-          
-            <Box p={4} spacing={4} bg="gray.100" w="50%" mx="auto" borderRadius="lg">
+          <div ref={formRef}>
+            <Box p={4} spacing={4} bg="gray.100" w="90%" mx="auto" borderRadius="lg">
                 <Stack>
                     <FormControl>
                         <FormLabel>Student Travel Registration Form - Day Trip (Student)</FormLabel>
@@ -231,6 +271,9 @@ const DisplayForms = ({ formData }) => {
                     </FormControl>
                 </Stack>
             </Box>
+            </div>
+
+            <Button onClick={downloadPDF}>Download PDF</Button>
         </>
     );
 };
@@ -243,7 +286,7 @@ DisplayForms.propTypes = {
       host_organization: PropTypes.string,
       departure_time: PropTypes.string,
       approximate_return_time: PropTypes.string,
-      minimum_age_requirement: PropTypes.string,
+      minimum_age_requirement: PropTypes.number,
       first_name: PropTypes.string,
       last_name: PropTypes.string,
       kuid: PropTypes.string,
@@ -260,9 +303,9 @@ DisplayForms.propTypes = {
       transportationWaiver: PropTypes.bool,
       agree_to_ferpa: PropTypes.bool,
       financial_obligation: PropTypes.bool,
-      paid_ticket_price: PropTypes.string,
-      other_activity_costs: PropTypes.string,
-      total_financial_obligation: PropTypes.string,
+      paid_ticket_price: PropTypes.number,
+      other_activity_costs: PropTypes.number,
+      total_financial_obligation: PropTypes.number,
       emergency_contact_name: PropTypes.string,
       relation_to_participant: PropTypes.string,
       emergency_contact_phone: PropTypes.string,
