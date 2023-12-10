@@ -277,6 +277,12 @@ def submit_student_travel_registration_form_day():
             jsonify({"message": "User already submitted form. Wait for approval."}),
             200,
         )
+    
+    # Set Route based on the value of financialObligation in data
+    is_grant_funded = data.get("financialObligation", False)  # default to non-grant
+    current_route_id = 1 if is_grant_funded else 2
+    student_registration_day.CurrentRouteID = current_route_id
+    student_registration_day.CurrentApprovalLevelID = 1 
 
     db.session.add(student_registration_day)
     db.session.commit()
