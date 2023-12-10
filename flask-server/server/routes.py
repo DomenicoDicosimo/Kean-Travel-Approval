@@ -5,26 +5,27 @@ This module contains the routes for the Flask server.
 import os
 import smtplib
 from datetime import datetime
+
 # from email import message
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from flask import Blueprint, jsonify, request
-from flask import send_from_directory
+from flask import Blueprint, jsonify, request, send_from_directory
 from sqlalchemy.exc import SQLAlchemyError
+
 # New imports for uploading receipts
 from werkzeug.utils import secure_filename
 
 from . import db
 from .models import (
+    ApprovalRoute,
+    Approver,
+    Expenses,
+    Receipt,
     StudentTravelRegistrationFormDay,
     TravelAuthorizationRequestForm,
     TravelEthicsForm,
     User,
-    Receipt,
-    Approver,
-    Expenses,
-    ApprovalRoute,
 )
 
 main = Blueprint("main", __name__)
@@ -196,7 +197,7 @@ def get_user_submitted_forms():
 @main.route("/get-user-submitted-forms/<int:form_id>", methods=["GET"])
 def get_user_submitted_form(form_id):
     """
-    Example call: http://127.0.0.1:5000/get-user-submitted-forms/form_id?email=user@example.com
+    Example call: http://127.0.0.1:5000/get-user-submitted-forms/10?email=user@example.com
     """
     target_email = request.args.get("email")
     form = (
