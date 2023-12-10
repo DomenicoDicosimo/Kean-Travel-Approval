@@ -155,7 +155,10 @@ export default function DisplayStudentTravelRegistrationFormDay({
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
-                <Input value={formatDateTime(formData.form.approximate_return_time) || ''} isReadOnly />
+                <Input
+                  value={formatDateTime(formData.form.approximate_return_time) || ''}
+                  isReadOnly
+                />
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="minimum_age_requirement">Minimum Age Requirement</FormLabel>
@@ -238,7 +241,10 @@ export default function DisplayStudentTravelRegistrationFormDay({
                   </FormControl>
                   <FormControl>
                     <FormLabel htmlFor="parent_signature_date">Date</FormLabel>
-                    <Input value={formatDate(formData.form.parent_signature_date) || ''} isReadOnly />
+                    <Input
+                      value={formatDate(formData.form.parent_signature_date) || ''}
+                      isReadOnly
+                    />
                   </FormControl>
                 </HStack>
                 <FormControl>
@@ -267,6 +273,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
             <FormControl>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               {/* FIXME Coming in backwards */}
+              <Text>{usingUniversityTransport}</Text>
               <RadioGroup defaultValue={!usingUniversityTransport ? 'yes' : 'no'}>
                 <Stack direction="row">
                   <Radio value="yes" isReadOnly>
@@ -282,7 +289,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
               <FormControl display="flex" alignItems="center">
                 <Checkbox
                   name="transportationWaiver"
-                  isChecked={formData.form.transportationWaiver || ''}
+                  defaultChecked={formData.form.transportationWaiver || ''}
                   isReadOnly
                 >
                   I agree to the Transportation Waiver
