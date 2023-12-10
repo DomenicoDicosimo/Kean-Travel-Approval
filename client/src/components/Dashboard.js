@@ -23,7 +23,7 @@ export default function Dashboard() {
     const navigate = useNavigate(); //new
     const email = user?.emailAddresses[0]?.emailAddress;
 
-    const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
 
     const loadUserSubmittedForms = useCallback(() => {
         if (email) {
@@ -34,9 +34,9 @@ export default function Dashboard() {
         }
     }, [email]); // Dependency on email
 
-    useEffect(() => {
-        loadUserSubmittedForms();
-    }, [loadUserSubmittedForms]); 
+  useEffect(() => {
+    loadUserSubmittedForms();
+  }, [loadUserSubmittedForms]);
 
     return (
         <>
