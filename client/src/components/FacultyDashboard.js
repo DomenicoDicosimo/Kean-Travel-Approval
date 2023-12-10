@@ -48,18 +48,22 @@ const handleFormClick = (form) => {
 
 
 const renderFormCard = (form, type) => {
+    //hard coded color
+    const colorScheme = form.status === 'Approved' ? 'green' : 'yellow';
+
     return (
         <Card key={form.id} p={5} shadow="md" borderWidth="1px" onClick={() => handleFormClick(form)}>
             <VStack align="start">
                 <Text fontWeight="bold">{form.title}</Text>
-                <Text fontSize="sm">{type === 'student' ? form.first_name : form.name}</Text>
+                <Text fontSize="sm">{type === 'Student' ? form.first_name : form.name}</Text>
                 <Text fontSize="sm">{form.description}</Text>
                 <HStack spacing={4}>
-                    <Tag colorScheme={type === 'student' ? 'blue' : 'green'}>
-                        {type === 'student' ? 'Day Trip Form' : 'Ethics Form'}
+                    <Tag colorScheme={type === 'Student' ? 'blue' : 'green'}>
+                        {type === 'Student' ? 'Day Trip Form' : 'Ethics Form'}
                     </Tag>
-                    <Tag colorScheme={form.status === 'pending' ? 'yellow' : 'green'}>
-                        {form.status}
+                    {/* Hard-coded color display until we get status from table*/}
+                    <Tag colorScheme={colorScheme}>
+                        {colorScheme === 'yellow' ? 'Pending' : 'Approved'}
                     </Tag>
                 </HStack>
             </VStack>
@@ -89,11 +93,11 @@ const renderFormCard = (form, type) => {
                 <GridItem colSpan={2}>
                     <Heading size="md" mb={4}>Day Trip Forms</Heading>
                     <Stack spacing={3}>
-                        {dayTripForms.map(form => renderFormCard(form, 'student'))}
+                        {dayTripForms.map(form => renderFormCard(form, 'Student'))}
                     </Stack>
                 </GridItem>
                 <GridItem colSpan={2}>
-                    <Heading size="md" mb={4}>Travel Ethics Forms</Heading>
+                   {/*  <Heading size="md" mb={4}>Travel Ethics Forms</Heading> */}
                     <Stack spacing={3}>
                       {/*   {ethicsForms.map(form => renderFormCard(form, 'ethics'))} */}
                     </Stack>
