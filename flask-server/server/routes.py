@@ -4,7 +4,7 @@ This module contains the routes for the Flask server.
 
 import os
 import smtplib
-from datetime import date, datetime
+from datetime import datetime
 
 # from email import message
 from email.mime.multipart import MIMEMultipart
@@ -18,7 +18,16 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 
 from . import db
-from .models import StudentTravelRegistrationFormDay, User, TravelAuthorizationRequestForm,TravelEthicsForm, Expenses, ApprovalRoute, FormApproval, Approver
+from .models import (
+    StudentTravelRegistrationFormDay,
+    User,
+    TravelAuthorizationRequestForm,
+    TravelEthicsForm,
+    Expenses,
+    ApprovalRoute,
+    Approver,
+    Receipt,
+)
 
 main = Blueprint("main", __name__)
 
@@ -231,7 +240,9 @@ def submit_student_travel_registration_form_day():
     )
     """ date_assigned=date.today(), """
 
-    if StudentTravelRegistrationFormDay.query.filter_by(email=data["email"]).first():
+    if StudentTravelRegistrationFormDay.query.filter_by(
+        email=data["email"], event_name=data["event_name"]
+    ).first():
         return (
             jsonify({"message": "User already submitted form. Wait for approval."}),
             200,
@@ -427,7 +438,9 @@ def submit_travel_ethics_form():
     db.session.add(Travel_Ethics_Form)
     db.session.commit()
 
-    return jsonify({'message': 'Form submitted successfully', 'FormID': TravelEthicsForm.FormID})
+    return jsonify(
+        {"message": "Form submitted successfully", "FormID": TravelEthicsForm.FormID}
+    )
 
 
 @main.route("/submit_expenses", methods=["POST"])
@@ -475,12 +488,13 @@ def submit_expenses():
         # Log the exception here
         return jsonify({"error": "Database error"}), 500
 
-@main.route('/submit-approval', methods=['POST'])
+
+@main.route("/submit-approval", methods=["POST"])
 def submit_approval():
     # Extract form ID and approver ID from request
     data = request.json
-    id = data['id']
-    approver_id = data['approver_id']
+    id = data["id"]
+    approver_id = data["approver_id"]
 
     # Retrieve the form and approver from the database
     form = StudentTravelRegistrationFormDay.query.get(id)
@@ -492,8 +506,7 @@ def submit_approval():
 
     # Find the next level in the route
     next_level = ApprovalRoute.query.filter_by(
-        RouteID=form.CurrentRouteID, 
-        ApprovalOrder=form.CurrentApprovalLevelID + 1
+        RouteID=form.CurrentRouteID, ApprovalOrder=form.CurrentApprovalLevelID + 1
     ).first()
 
     # If there's a next level, update the form
@@ -507,9 +520,10 @@ def submit_approval():
 
     return jsonify({"message": "Approval submitted successfully"}), 200
 
-@main.route('/forms-for-approval', methods=['GET'])
+
+@main.route("/forms-for-approval", methods=["GET"])
 def get_forms_for_approval():
-    user_id = request.args.get('user_id') 
+    user_id = request.args.get("user_id")
 
     # Check if the user is an approver and retrieve their level
     approver = Approver.query.filter_by(UserID=user_id).first()
@@ -519,11 +533,13 @@ def get_forms_for_approval():
     approval_level_id = approver.LevelID
 
     # Fetch student travel forms at the approver's level
-    student_travel_forms = StudentTravelRegistrationFormDay.query.filter_by(CurrentApprovalLevelID=approval_level_id).all()
+    student_travel_forms = StudentTravelRegistrationFormDay.query.filter_by(
+        CurrentApprovalLevelID=approval_level_id
+    ).all()
 
     student_travel_forms_data = [form.to_dict() for form in student_travel_forms]
 
-    return jsonify({'student_travel_forms': student_travel_forms_data}), 200
+    return jsonify({"student_travel_forms": student_travel_forms_data}), 200
 
 
 # Test Route
