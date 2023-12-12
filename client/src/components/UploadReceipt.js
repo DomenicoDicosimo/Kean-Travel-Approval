@@ -58,17 +58,7 @@ const UploadReceipt = () => {
     const fileExtension = receipt.file_path.split('.').pop().toLowerCase();
     const filename = receipt.file_path.split('\\').pop();
     const fileUrl = `http://localhost:5000/uploads/${filename}`;
-    if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
-      return (
-        <a
-          href={fileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {filename}
-        </a>
-      );
-    } else if (fileExtension === 'pdf') {
+    if (['jpg', 'jpeg', 'png', 'pdf'].includes(fileExtension)) {
       return (
         <a
           href={fileUrl}
