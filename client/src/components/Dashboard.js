@@ -25,6 +25,17 @@ import NavBar from './NavBar';
 export default function Dashboard() {
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
+  
+  const formatTime = (timeString) => {
+    if (!timeString) return 'N/A';
+    const dummyDate = '1970-01-01T'; // Dummy date
+    return new Date(dummyDate + timeString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false 
+    });
+  };
 
   const [data, setData] = useState([]);
 
@@ -207,10 +218,7 @@ export default function Dashboard() {
                             </WrapItem>
                             <WrapItem>
                               <Badge bg="red.500" color="white">
-                                Departure Time:{' '}
-                                {form.form.departure_time
-                                  ? new Date(form.form.departure_time).toLocaleString()
-                                  : 'N/A'}
+                               Departure Time: {formatTime(form.form.departure_time)}
                               </Badge>
                             </WrapItem>
                             <WrapItem>

@@ -12,6 +12,18 @@ const DisplayForms = ({ formData }) => {
         return <div>Loading...</div>;
     }
 
+    const formatTime = (timeString) => {
+        if (!timeString) return 'N/A';
+        const dummyDate = '1970-01-01T'; // Dummy date
+        return new Date(dummyDate + timeString).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false 
+        });
+      };
+    
+
     function downloadPDF() {
         html2canvas(formRef.current, { scale: 3 }).then((canvas) => {
           const imgData = canvas.toDataURL('image/jpeg', 1.0);
@@ -60,17 +72,6 @@ const DisplayForms = ({ formData }) => {
         return `${month}/${day}/${year}`;
     }
 
-    function formatDateTime(dateTime) {
-        const timeObj = new Date(dateTime);
-        let hours = timeObj.getHours().toString().padStart(2, '0');
-        let minutes = timeObj.getMinutes().toString().padStart(2, '0');
-    
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        return `${formatDate(dateTime)} ${hours}:${minutes} ${ampm}`;
-    }
-    
     function formatPhoneNumber(phoneNumber) {
         const cleaned = ('' + phoneNumber).replace(/\D/g, '');
         const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
@@ -108,11 +109,11 @@ const DisplayForms = ({ formData }) => {
                     <HStack spacing={4}>
                         <FormControl>
                             <FormLabel htmlFor="departure_time">Departure Time</FormLabel>
-                            <Input value={formatDateTime(formData.departure_time) || ''} isReadOnly />
+                            <Input value={formatTime(formData.departure_time) || ''} isReadOnly />
                         </FormControl>
                         <FormControl>
                             <FormLabel htmlFor="approximate_return_time">Approximate Return Time</FormLabel>
-                            <Input value={formatDateTime(formData.approximate_return_time) || ''} isReadOnly />
+                            <Input value={formatTime(formData.approximate_return_time) || ''} isReadOnly />
                         </FormControl>
                         <FormControl>
                             <FormLabel htmlFor="minimum_age_requirement">Minimum Age Requirement</FormLabel>
