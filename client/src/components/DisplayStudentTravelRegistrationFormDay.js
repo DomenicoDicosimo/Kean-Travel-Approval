@@ -21,6 +21,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 
+export function formatDate(date) {
+  const dateObj = new Date(date);
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
 export default function DisplayStudentTravelRegistrationFormDay() {
   const formRef = useRef();
 
@@ -58,14 +66,6 @@ export default function DisplayStudentTravelRegistrationFormDay() {
     return age;
   };
   const age = calculateAge(formData.form.date_of_birth);
-
-  function formatDate(date) {
-    const dateObj = new Date(date);
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
 
   function formatTime(time) {
     const [hoursInput, minutes] = time.split(':');
