@@ -56,7 +56,7 @@ const UploadReceipt = () => {
 
   const renderReceipt = (receipt) => {
     const fileExtension = receipt.file_path.split('.').pop().toLowerCase();
-    const filename = receipt.file_path.split('\\').pop();
+    const filename = receipt.file_path.split(/[/\\]/).pop();
     if (['jpg', 'jpeg', 'png', 'pdf'].includes(fileExtension)) {
       return (
         <a
