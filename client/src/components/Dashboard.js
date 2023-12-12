@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { formatDate } from './DisplayStudentTravelRegistrationFormDay';
 import { useUser, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
 import {
   Box,
@@ -25,17 +26,6 @@ import NavBar from './NavBar';
 export default function Dashboard() {
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
-  
-  function formatTime(time) {
-    const [hoursInput, minutes] = time.split(':');
-    let hours = parseInt(hoursInput, 10);
-
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-  }
-
 
   const [data, setData] = useState([]);
 
@@ -218,7 +208,10 @@ export default function Dashboard() {
                             </WrapItem>
                             <WrapItem>
                               <Badge bg="red.500" color="white">
-                               Departure Time: {formatTime(form.form.departure_time)}
+                                Event Date:{' '}
+                                {form.form.event_date
+                                  ? formatDate(new Date(form.form.event_date))
+                                  : 'N/A'}
                               </Badge>
                             </WrapItem>
                             <WrapItem>
