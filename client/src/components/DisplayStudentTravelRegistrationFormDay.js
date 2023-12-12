@@ -399,7 +399,16 @@ export default function DisplayStudentTravelRegistrationFormDay() {
           </Stack>
         </Box>
       </div>
-      <Button onClick={downloadPDF}>Download PDF</Button>
+      <Button
+        onClick={downloadPDF}
+        style={{
+          display: 'block',
+          margin: '0 auto',
+          marginTop: '5px',
+        }}
+      >
+        Download PDF
+      </Button>
     </>
   );
 }
