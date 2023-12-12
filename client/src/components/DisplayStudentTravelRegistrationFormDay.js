@@ -21,7 +21,15 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-export default function DisplayStudentTravelRegistrationFormDay({ usingUniversityTransport }) {
+export function formatDate(date) {
+  const dateObj = new Date(date);
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+export default function DisplayStudentTravelRegistrationFormDay() {
   const formRef = useRef();
 
   const query = new URLSearchParams(useLocation().search);
@@ -58,14 +66,6 @@ export default function DisplayStudentTravelRegistrationFormDay({ usingUniversit
     return age;
   };
   const age = calculateAge(formData.form.date_of_birth);
-
-  function formatDate(date) {
-    const dateObj = new Date(date);
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
 
   function formatTime(time) {
     const [hoursInput, minutes] = time.split(':');
@@ -275,7 +275,6 @@ export default function DisplayStudentTravelRegistrationFormDay({ usingUniversit
             <FormControl>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               {/* FIXME using value of transportation_waiver which isn't required */}
-              <Text>Transport?{usingUniversityTransport}</Text>
               <RadioGroup defaultValue={formData.form.transportation_waiver ? 'no' : 'yes'}>
                 <Stack direction="row">
                   <Radio value="yes" isReadOnly>
@@ -400,7 +399,16 @@ export default function DisplayStudentTravelRegistrationFormDay({ usingUniversit
           </Stack>
         </Box>
       </div>
-      <Button onClick={downloadPDF}>Download PDF</Button>
+      <Button
+        onClick={downloadPDF}
+        style={{
+          display: 'block',
+          margin: '0 auto',
+          marginTop: '5px',
+        }}
+      >
+        Download PDF
+      </Button>
     </>
   );
 }
