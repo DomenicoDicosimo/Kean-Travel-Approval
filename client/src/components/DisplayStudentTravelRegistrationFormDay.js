@@ -21,10 +21,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-export default function DisplayStudentTravelRegistrationFormDay({
-  usingUniversityTransport,
-  isUnderage,
-}) {
+export default function DisplayStudentTravelRegistrationFormDay({ usingUniversityTransport }) {
   const formRef = useRef();
 
   const query = new URLSearchParams(useLocation().search);
@@ -35,10 +32,8 @@ export default function DisplayStudentTravelRegistrationFormDay({
   DisplayStudentTravelRegistrationFormDay.propTypes = {
     userEmail: PropTypes.string,
     formId: PropTypes.string,
-    usingUniversityTransport: PropTypes.bool,
-    isUnderage: PropTypes.bool,
+    usingUniversityTransport: PropTypes.string,
   };
-
   useEffect(() => {
     const url = `http://127.0.0.1:5000/get-user-submitted-forms/${formId}?email=${userEmail}`;
     console.log(url);
@@ -51,6 +46,18 @@ export default function DisplayStudentTravelRegistrationFormDay({
   if (!formData) {
     return <div>Loading...</div>;
   }
+
+  const calculateAge = (date_of_birth) => {
+    const dob = new Date(date_of_birth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const numMonths = today.getMonth() - dob.getMonth();
+    if (numMonths < 0 || (numMonths === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    return age;
+  };
+  const age = calculateAge(formData.form.date_of_birth);
 
   function formatDate(date) {
     const dateObj = new Date(date);
@@ -220,7 +227,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
               </Checkbox>
             </FormControl>
             {/* Parent/Guardian Information for Underage Participants - Part of Section 2*/}
-            {isUnderage && (
+            {age < 18 && (
               <Box>
                 <Text>Parent/Guardian Information (Required for participants under 18)</Text>
                 <HStack>
@@ -267,9 +274,9 @@ export default function DisplayStudentTravelRegistrationFormDay({
             </FormLabel>
             <FormControl>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
-              {/* FIXME Coming in backwards */}
-              <Text>{usingUniversityTransport}</Text>
-              <RadioGroup defaultValue={!usingUniversityTransport ? 'yes' : 'no'}>
+              {/* FIXME using value of transportation_waiver which isn't required */}
+              <Text>Transport?{usingUniversityTransport}</Text>
+              <RadioGroup defaultValue={formData.form.transportation_waiver ? 'no' : 'yes'}>
                 <Stack direction="row">
                   <Radio value="yes" isReadOnly>
                     Yes
@@ -280,11 +287,11 @@ export default function DisplayStudentTravelRegistrationFormDay({
                 </Stack>
               </RadioGroup>
             </FormControl>
-            {usingUniversityTransport && (
+            {formData.form.transportation_waiver && (
               <FormControl display="flex" alignItems="center">
                 <Checkbox
                   name="transportationWaiver"
-                  defaultChecked={formData.form.transportationWaiver || ''}
+                  defaultChecked={formData.form.transportation_waiver || ''}
                   isReadOnly
                 >
                   I agree to the Transportation Waiver
