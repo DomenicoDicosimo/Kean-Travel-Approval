@@ -29,6 +29,25 @@ export function formatDate(date) {
   return `${month}/${day}/${year}`;
 }
 
+export function formatTime(time) {
+  const [hoursInput, minutes] = time.split(':');
+  let hours = parseInt(hoursInput, 10);
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+}
+
+export function formatPhoneNumber(phoneNumber) {
+  const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+  }
+  return null;
+}
+
 export default function DisplayStudentTravelRegistrationFormDay() {
   const formRef = useRef();
 
@@ -66,25 +85,6 @@ export default function DisplayStudentTravelRegistrationFormDay() {
     return age;
   };
   const age = calculateAge(formData.form.date_of_birth);
-
-  function formatTime(time) {
-    const [hoursInput, minutes] = time.split(':');
-    let hours = parseInt(hoursInput, 10);
-
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-  }
-
-  function formatPhoneNumber(phoneNumber) {
-    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-      return '(' + match[1] + ') ' + match[2] + '-' + match[3];
-    }
-    return null;
-  }
 
   // FIXME improve resolution
   function downloadPDF() {
