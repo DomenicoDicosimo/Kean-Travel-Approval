@@ -21,7 +21,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-export default function DisplayStudentTravelRegistrationFormDay({ usingUniversityTransport }) {
+export default function DisplayStudentTravelRegistrationFormDay() {
   const formRef = useRef();
 
   const query = new URLSearchParams(useLocation().search);
@@ -275,7 +275,6 @@ export default function DisplayStudentTravelRegistrationFormDay({ usingUniversit
             <FormControl>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               {/* FIXME using value of transportation_waiver which isn't required */}
-              <Text>Transport?{usingUniversityTransport}</Text>
               <RadioGroup defaultValue={formData.form.transportation_waiver ? 'no' : 'yes'}>
                 <Stack direction="row">
                   <Radio value="yes" isReadOnly>
