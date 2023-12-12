@@ -26,16 +26,16 @@ export default function Dashboard() {
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
   
-  const formatTime = (timeString) => {
-    if (!timeString) return 'N/A';
-    const dummyDate = '1970-01-01T'; // Dummy date
-    return new Date(dummyDate + timeString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false 
-    });
-  };
+  function formatTime(time) {
+    const [hoursInput, minutes] = time.split(':');
+    let hours = parseInt(hoursInput, 10);
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+  }
+
 
   const [data, setData] = useState([]);
 
