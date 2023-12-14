@@ -75,7 +75,6 @@ export default function StudentTravelRegistrationFormDay() {
 
   const handleTransportationChange = (value) => {
     setUsingUniversityTransport(value);
-    console.log(usingUniversityTransport);
   };
 
   const handleFinancialObligationChange = (value) => {
@@ -519,7 +518,6 @@ export default function StudentTravelRegistrationFormDay() {
             <FormControl isRequired>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
               <RadioGroup onChange={handleTransportationChange} value={usingUniversityTransport}>
-                <Text>{usingUniversityTransport}</Text>
                 <Stack direction="row">
                   <Radio value="yes">Yes</Radio>
                   <Radio value="no">No</Radio>
@@ -528,7 +526,7 @@ export default function StudentTravelRegistrationFormDay() {
             </FormControl>
 
             {usingUniversityTransport === 'no' && (
-              <FormControl display="flex" alignItems="center">
+              <FormControl display="flex" alignItems="center" isRequired>
                 <Checkbox
                   name="transportationWaiver"
                   isChecked={formData.transportationWaiver}
@@ -620,6 +618,7 @@ export default function StudentTravelRegistrationFormDay() {
                         id="otherActivityCosts"
                         name="otherActivityCosts"
                         type="number"
+                        step="0.01"
                         pattern="^[0-9]+(\.[0-9]{1,2})?$"
                         onChange={handleInputChange}
                         placeholder="Enter other activity costs"

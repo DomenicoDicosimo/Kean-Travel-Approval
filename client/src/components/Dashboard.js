@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { formatDate } from './DisplayStudentTravelRegistrationFormDay';
 import { useUser, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
 import {
   Box,
@@ -216,9 +217,9 @@ export default function Dashboard() {
                             </WrapItem>
                             <WrapItem>
                               <Badge bg="red.500" color="white">
-                                Departure Time:{' '}
-                                {form.form.departure_time
-                                  ? new Date(form.form.departure_time).toLocaleString()
+                                Event Date:{' '}
+                                {form.form.event_date
+                                  ? formatDate(new Date(form.form.event_date))
                                   : 'N/A'}
                               </Badge>
                             </WrapItem>

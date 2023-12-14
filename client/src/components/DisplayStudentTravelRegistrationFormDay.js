@@ -21,10 +21,34 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-export default function DisplayStudentTravelRegistrationFormDay({
-  usingUniversityTransport,
-  isUnderage,
-}) {
+export function formatDate(date) {
+  const dateObj = new Date(date);
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+export function formatTime(time) {
+  const [hoursInput, minutes] = time.split(':');
+  let hours = parseInt(hoursInput, 10);
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+}
+
+export function formatPhoneNumber(phoneNumber) {
+  const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+  }
+  return null;
+}
+
+export default function DisplayStudentTravelRegistrationFormDay() {
   const formRef = useRef();
 
   const query = new URLSearchParams(useLocation().search);
@@ -35,10 +59,8 @@ export default function DisplayStudentTravelRegistrationFormDay({
   DisplayStudentTravelRegistrationFormDay.propTypes = {
     userEmail: PropTypes.string,
     formId: PropTypes.string,
-    usingUniversityTransport: PropTypes.bool,
-    isUnderage: PropTypes.bool,
+    usingUniversityTransport: PropTypes.string,
   };
-
   useEffect(() => {
     const url = `http://127.0.0.1:5000/get-user-submitted-forms/${formId}?email=${userEmail}`;
     console.log(url);
@@ -52,32 +74,17 @@ export default function DisplayStudentTravelRegistrationFormDay({
     return <div>Loading...</div>;
   }
 
-  function formatDate(date) {
-    const dateObj = new Date(date);
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const day = (dateObj.getDate() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
-
-  function formatTime(time) {
-    const [hoursInput, minutes] = time.split(':');
-    let hours = parseInt(hoursInput, 10);
-
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-  }
-
-  function formatPhoneNumber(phoneNumber) {
-    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-      return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+  const calculateAge = (date_of_birth) => {
+    const dob = new Date(date_of_birth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const numMonths = today.getMonth() - dob.getMonth();
+    if (numMonths < 0 || (numMonths === 0 && today.getDate() < dob.getDate())) {
+      age--;
     }
-    return null;
-  }
+    return age;
+  };
+  const age = calculateAge(formData.form.date_of_birth);
 
   // FIXME improve resolution
   function downloadPDF() {
@@ -220,7 +227,7 @@ export default function DisplayStudentTravelRegistrationFormDay({
               </Checkbox>
             </FormControl>
             {/* Parent/Guardian Information for Underage Participants - Part of Section 2*/}
-            {isUnderage && (
+            {age < 18 && (
               <Box>
                 <Text>Parent/Guardian Information (Required for participants under 18)</Text>
                 <HStack>
@@ -267,9 +274,8 @@ export default function DisplayStudentTravelRegistrationFormDay({
             </FormLabel>
             <FormControl>
               <FormLabel>Are you utilizing the Kean University provided transportation?</FormLabel>
-              {/* FIXME Coming in backwards */}
-              <Text>{usingUniversityTransport}</Text>
-              <RadioGroup defaultValue={!usingUniversityTransport ? 'yes' : 'no'}>
+              {/* FIXME using value of transportation_waiver which isn't required */}
+              <RadioGroup defaultValue={formData.form.transportation_waiver ? 'no' : 'yes'}>
                 <Stack direction="row">
                   <Radio value="yes" isReadOnly>
                     Yes
@@ -280,11 +286,11 @@ export default function DisplayStudentTravelRegistrationFormDay({
                 </Stack>
               </RadioGroup>
             </FormControl>
-            {usingUniversityTransport && (
+            {formData.form.transportation_waiver && (
               <FormControl display="flex" alignItems="center">
                 <Checkbox
                   name="transportationWaiver"
-                  defaultChecked={formData.form.transportationWaiver || ''}
+                  defaultChecked={formData.form.transportation_waiver || ''}
                   isReadOnly
                 >
                   I agree to the Transportation Waiver
@@ -393,7 +399,16 @@ export default function DisplayStudentTravelRegistrationFormDay({
           </Stack>
         </Box>
       </div>
-      <Button onClick={downloadPDF}>Download PDF</Button>
+      <Button
+        onClick={downloadPDF}
+        style={{
+          display: 'block',
+          margin: '0 auto',
+          marginTop: '5px',
+        }}
+      >
+        Download PDF
+      </Button>
     </>
   );
 }
