@@ -33,7 +33,7 @@ export default function Dashboard() {
 
   const loadUserSubmittedForms = useCallback(() => {
     if (email) {
-      const url = `http://127.0.0.1:5000/get-user-submitted-forms?email=${email}`;
+      const url = `http://localhost:5000/get-user-submitted-forms?email=${email}`;
       axios
         .get(url, { headers: { 'Content-Type': 'application/json' } })
         .then((res) => setData(res.data))
