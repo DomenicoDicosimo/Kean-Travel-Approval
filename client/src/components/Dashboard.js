@@ -96,7 +96,7 @@ export default function Dashboard() {
                         <Link
                           to={`/display-student-travel-registration-form-day?formId=${
                             form.id || 'N/A'
-                          }`}
+                          }&email=${form.email}`}
                         >
                           <Wrap>
                             <WrapItem>
